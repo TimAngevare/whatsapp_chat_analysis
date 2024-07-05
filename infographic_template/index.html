@@ -1,6 +1,46 @@
-<div>
-  <canvas id="whatsappChart"></canvas>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Analysis</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="styling.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <div class="primary box">
+                    <div id="firstMessage"></div>
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="secondary box">
+                    <div id="sender"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <div class="primary box">
+                    <div id="firstMessageJoost"></div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="secondary box">
+                    <div id="heatMap"></div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="primary box">
+                    <div id="firstMessageTim"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="charts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="charts.js"></script>
+</body>
+</html>

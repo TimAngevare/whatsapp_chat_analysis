@@ -52,11 +52,17 @@ class Chat:
         return person_stats
     
     def analyse_time(self) -> dict:
-        self.data['Hour'] = self.data.DateTime.dt.hour
-        self.data['Day'] = self.data.DateTime.dt.dayofweek
-        hour_count = self.data.groupby('Hour').size()
-        day_of_week_count = self.data.groupby('Day').size()
-        return {'day of week' : day_of_week_count.to_dict(), 'hours' : hour_count.to_dict()}
+        self.data['DayOfWeek'] = self.data['DateTime'].dt.dayofweek + 1  # Adding 1 to make it 1-7 instead of 0-6
+        self.data['Hour'] = self.data['DateTime'].dt.hour
+        grouped = self.data.groupby(['DayOfWeek', 'Hour']).size().unstack(fill_value=0)
+        result = {}
+        for day in range(1, 8):
+            if day in grouped.index:
+                result[day] = grouped.loc[day].tolist()
+            else:
+                result[day] = [0] * 24
+        return result
+    
     
     def analyse(self) -> None:
         message_count = len(self.data)
