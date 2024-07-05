@@ -2,6 +2,8 @@ import pandas as pd
 import json
 from zipfile import ZipFile 
 import re
+from collections import Counter
+
 
 class Chat:
     def __init__(self, filePath : str) -> None:
@@ -52,16 +54,48 @@ class Chat:
         return person_stats
     
     def analyse_time(self) -> dict:
-        self.data['Hour'] = self.data.DateTime.dt.hour
-        self.data['Day'] = self.data.DateTime.dt.dayofweek
-        hour_count = self.data.groupby('Hour').size()
-        day_of_week_count = self.data.groupby('Day').size()
-        return {'day of week' : day_of_week_count.to_dict(), 'hours' : hour_count.to_dict()}
+        self.data['DayOfWeek'] = self.data['DateTime'].dt.dayofweek + 1  # Adding 1 to make it 1-7 instead of 0-6
+        self.data['Hour'] = self.data['DateTime'].dt.hour
+        grouped = self.data.groupby(['DayOfWeek', 'Hour']).size().unstack(fill_value=0)
+        result = {}
+        for day in range(1, 8):
+            if day in grouped.index:
+                result[day] = grouped.loc[day].tolist()
+            else:
+                result[day] = [0] * 24
+        return result
     
+    def get_top_10_words(self, df):
+        # Define common Dutch stop words
+        stop_words = set(['de', 'het', 'een', 'en', 'van', 'ik', 'te', 'dat', 'die', 'in', 'is', 'het', 'niet', 'zijn', 'je', 'hij'])
+    
+        # Combine all messages into a single string
+        all_messages = ' '.join(df['Message'].astype(str))
+    
+        # Convert to lowercase
+        all_messages = all_messages.lower()
+    
+        #  Remove punctuation and split into words
+        words = re.findall(r'\w+', all_messages)
+    
+        # Remove stop words
+        words = [word for word in words if word not in stop_words]
+    
+        # Count word frequencies
+        word_counts = Counter(words)
+        # Get the top 10 most common words
+        top_10 = word_counts.most_common(10)
+        words = {}
+        for word, value in top_10:
+            words[word] = value
+        return words
+
     def analyse(self) -> None:
         message_count = len(self.data)
         self.export['total_messages'] = message_count
         persons = self.data.Sender.unique()
         self.export['people'] = [self.analyse_per_person(person, message_count) for person in persons]
         self.export['time'] = self.analyse_time()
+        self.export['words'] = self.get_top_10_words(self.data)
+
 
