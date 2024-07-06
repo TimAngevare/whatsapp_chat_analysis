@@ -98,4 +98,3 @@ class Chat:
         self.export['time'] = self.analyse_time()
         self.export['words'] = self.get_top_10_words(self.data)
 
-
