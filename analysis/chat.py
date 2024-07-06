@@ -3,6 +3,7 @@ import json
 from zipfile import ZipFile 
 import re
 from collections import Counter
+from pattern.nl import sentiment
 
 
 class Chat:
@@ -35,6 +36,10 @@ class Chat:
     def getData(self) -> pd.DataFrame:
         return self.data
     
+    def analyze_dutch_sentiment(self, text):
+        polarity, subjectivity = sentiment(text)
+        return polarity 
+
     def getExport(self) -> dict:
         return self.export
     
@@ -50,7 +55,16 @@ class Chat:
         person_messages = self.data[self.data.Sender==person]
         first = person_messages.iloc[0]
         percentage = len(person_messages) / message_count
-        person_stats = {'name': person, 'count' : len(person_messages), 'percentage' : round(percentage, 2), 'first_message' : {'message' : first['Message'], 'timeStamp' : str(first['DateTime'])}}
+        # Calculate the statistics
+        stats = person_messages['sentiment'].describe()
+
+        # Extract the specific values we need
+        min_val = stats['min']
+        q1 = stats['25%']
+        median = stats['50%']
+        q3 = stats['75%']
+        max_val = stats['max']
+        person_stats = {'name': person, 'count' : len(person_messages), 'percentage' : round(percentage, 2), 'polarity' : [min_val, q1, median, q3, max_val],'first_message' : {'message' : first['Message'], 'timeStamp' : str(first['DateTime'])}}
         return person_stats
     
     def analyse_time(self) -> dict:
@@ -93,6 +107,7 @@ class Chat:
     def analyse(self) -> None:
         message_count = len(self.data)
         self.export['total_messages'] = message_count
+        self.data['sentiment'] = self.data['Message'].apply(self.analyze_dutch_sentiment)
         persons = self.data.Sender.unique()
         self.export['people'] = [self.analyse_per_person(person, message_count) for person in persons]
         self.export['time'] = self.analyse_time()

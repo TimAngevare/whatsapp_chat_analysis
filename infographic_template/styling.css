@@ -3,6 +3,14 @@
     justify-content: flex-start;
     margin-bottom: 20px;
   }
+
+.apexcharts-toolbar {
+    display: none;
+}
+
+.apexcharts-menu-icon {
+    display: none;
+}
   
 .message-bubble {
     max-width: 70%;

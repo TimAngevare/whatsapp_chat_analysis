@@ -29,6 +29,7 @@ fetch('./data.json')
     })
     .then(data => {
         dataJSON = data;
+        polarityChart();
         analyse();
         // Display total messages
        //document.getElementById('totalMessages').innerText = `Total Messages: ${dataJSON.total_messages}`;
@@ -36,6 +37,35 @@ fetch('./data.json')
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
     });
+
+function transformDataPolarity(data) {
+    return data.people.map(person => ({
+        x: person.name,
+        y: person.polarity
+    }));
+}    
+
+function polarityChart(){
+    const transformedData = transformDataPolarity(dataJSON);
+
+// Create the chart configuration
+    const chartConfig = {
+        chart: {
+            type: "boxPlot"
+        },
+        series: [{
+            data: transformedData
+        }],
+        plotOptions: {
+            bar: {
+              horizontal: true
+            }
+        }
+    };
+    var chart = new ApexCharts(document.getElementsByClassName('polarity-container')[0], chartConfig);
+
+    chart.render();
+}
 
 function analyse(){
         // Pie Chart for Messages Sent by Person
