@@ -1,3 +1,8 @@
+#personal files
+data.json
+_chat.txt
+infographic.png
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
