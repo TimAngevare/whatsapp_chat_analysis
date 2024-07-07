@@ -1,0 +1,13 @@
+FROM python:3.8
+
+WORKDIR /whatsapp_analysis
+
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+RUN playwright install
+
+COPY ./analysis ./analysis
+COPY ./infographic_template ./infographic_template
+
+RUN python -m http.server 9000 --directory infographic_template
