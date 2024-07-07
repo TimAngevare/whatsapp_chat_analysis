@@ -68,9 +68,11 @@ function polarityChart(){
 }
 
 function analyse(){
-        // Pie Chart for Messages Sent by Person
+        document.getElementById('totalMessages').innerText = 'Verdeling van de totale ' + String(dataJSON.total_messages) + ' berichten';
         var messages = dataJSON.people.map(person => person.count);
         var person = dataJSON.people.map(person => person.name);
+
+        document.getElementById('chatTitle').innerText = 'De chat tussen ' + person.join(', ')
 
         var pieOptions = {
             series: messages,
@@ -107,9 +109,6 @@ function analyse(){
                 enabled: false
             },
             colors: ["#008FFB"],
-            title: {
-                text: 'Berichten frequentie'
-            },
             xaxis: {
                 type: 'category',
                 tickAmount: 24,

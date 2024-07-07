@@ -9,6 +9,9 @@
 </head>
 <body>
     <div class="container">
+        <div class="row title">
+            <h2 id="chatTitle"></h2>
+        </div>
         <div class="row">
             <div class="col-sm">
                 <div class="primary box">
@@ -24,25 +27,32 @@
             </div>
             <div class="col-lg">
                 <div class="secondary box">
+                    <h4 id="totalMessages"></h4>
                     <div id="sender"></div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-4">
-                <div class="primary box" id="firstMessage">
+                <div class="primary box">
+                    <h4>Het eerste berichtje</h4>
+                    <div id="firstMessage">
+                    </div>
                 </div>
             </div>
             <div class="col-lg-8">
                 <div class="secondary box">
+                    <h4>Berichten frequentie</h4>
                     <div id="heatMap"></div>
                 </div>
             </div>
         </div>
         <div class="row">
           <div class="col-sm">
-            <h4>Polariteit</h4>
-            <div class="primary box polarity-container"></div>
+            <div class="primary box">
+                <h4>Polariteit</h4>
+                <div class="polarity-container"></div>
+            </div>
           </div>
         </div>
     </div>

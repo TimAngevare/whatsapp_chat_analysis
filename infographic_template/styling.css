@@ -8,6 +8,14 @@
     display: none;
 }
 
+.title {
+    justify-content: center;
+}
+
+.box {
+    text-align: center;
+}
+
 .apexcharts-menu-icon {
     display: none;
 }
@@ -65,7 +73,7 @@
 
 .box {
     width: 100%;
-    height: 350px;
+    height: auto;
 }
 
 table {
