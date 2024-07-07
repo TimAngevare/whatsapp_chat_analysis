@@ -9,7 +9,7 @@ from pattern.nl import sentiment
 class Chat:
     def __init__(self, filePath : str) -> None:
         self.filePath = filePath
-        self.data = pd.DataFrame({'DateTime' : [], 'Sender' : [], 'Message' : []})
+        self.data = {'DateTime' : [], 'Sender' : [], 'Message' : []}
         self.pattern = re.compile(
     r'\[(\d{2}-\d{2}-\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)'
 )
@@ -30,8 +30,12 @@ class Chat:
 
         for match in matches:
             date, time, sender, message = match
-            dataLine = {'DateTime' : pd.to_datetime(date + ' ' + time, format='%d-%m-%Y %H:%M:%S'), 'Sender' : sender, 'Message' : message}
-            self.data = self.data.append(dataLine, ignore_index=True)
+            self.data['DateTime'].append(date + ' ' + time)
+            self.data['Sender'].append(sender)
+            self.data['Message'].append(message)
+        
+        self.data = pd.DataFrame(self.data)
+        self.data['DateTime'] = pd.to_datetime(self.data['DateTime'],format='%d-%m-%Y %H:%M:%S')
     
     def getData(self) -> pd.DataFrame:
         return self.data
