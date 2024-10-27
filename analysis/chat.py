@@ -16,8 +16,6 @@ class Chat:
         self.pattern = re.compile(
     r'\[(\d{2}-\d{2}-\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
         
-    r'\[(\d{2}-\d{2}-\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
-        
         self.export = {
             'total_messages' : 0,
             'people' : [],
@@ -95,11 +93,6 @@ class Chat:
                     content = first_line + chat.read()
                 else:
                     content = chat.read()
-                first_line = chat.readline()
-                if ' contact.' not in first_line:
-                    content = first_line + chat.read()
-                else:
-                    content = chat.read()
         
         matches = self.pattern.findall(content)
 
@@ -114,21 +107,6 @@ class Chat:
     
     def getData(self) -> pd.DataFrame:
         return self.data
-    
-    def detect_language(self, text: str) -> str:
-        try:
-            return detect(text)
-        except:
-            return 'en'  # Default to English if detection fails
-    
-    def analyze_sentiment(self, text: str, language: str) -> float:
-        try:
-            if language == 'nl':
-                return nl_sentiment(text)[0]
-            else:
-                return en_sentiment(text)[0]
-        except:
-            return 0.0  # Neutral sentiment if analysis fails
     
     def detect_language(self, text: str) -> str:
         try:
@@ -235,29 +213,7 @@ class Chat:
             word_counts.update(meaningful_words)
         
         # Get the top 10 most common meaningful words
-        language = self.detect_language(all_messages)
-        self.export['language'] = language
-        
-        # Process each message
-        word_counts = Counter()
-        
-        for message in df['Message']:
-            # Clean the message
-            cleaned_message = self.clean_message(message)
-            
-            # Split into words and filter
-            words = re.findall(r'\w+', cleaned_message)
-            meaningful_words = [
-                word for word in words 
-                if self.is_meaningful_word(word, language)
-            ]
-            
-            # Update word counts
-            word_counts.update(meaningful_words)
-        
-        # Get the top 10 most common meaningful words
         top_10 = word_counts.most_common(10)
-        return dict(top_10)
         return dict(top_10)
 
     def analyse(self) -> None:
@@ -276,10 +232,6 @@ class Chat:
         self.export['emoji_stats'] = self.analyze_emojis(self.data)
 
         persons = self.data.Sender.unique()
-        self.export['people'] = [
-            self.analyse_per_person(person, message_count) 
-            for person in persons
-        ]
         self.export['people'] = [
             self.analyse_per_person(person, message_count) 
             for person in persons
