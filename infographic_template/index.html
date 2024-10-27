@@ -12,19 +12,23 @@
         <div class="row title">
             <h2 id="chatTitle"></h2>
         </div>
+    
         <div class="row">
             <div class="col-sm">
                 <div class="primary box">
-                  <h3>Top 10 Meest gebruikte woorden</h3>
-                  <table id="wordTable">
-                      <tr>
-                          <th>Woord</th>
-                          <th>Frequentie</th>
-                      </tr>
-                      <!-- Table rows will be inserted here by JavaScript -->
-                  </table>
+                    <h3>Top 10 Meest gebruikte woorden</h3>
+                    <table id="wordTable">
+                        <thead>
+                            <tr>
+                              <th>Woord</th>
+                              <th>Frequentie</th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                    </table>
                 </div>
             </div>
+    
             <div class="col-lg">
                 <div class="secondary box">
                     <h4 id="totalMessages"></h4>
@@ -32,14 +36,15 @@
                 </div>
             </div>
         </div>
+    
         <div class="row">
             <div class="col-sm-4">
                 <div class="primary box">
                     <h4>Het eerste berichtje</h4>
-                    <div id="firstMessage">
-                    </div>
+                    <div id="firstMessage"></div>
                 </div>
             </div>
+    
             <div class="col-lg-8">
                 <div class="secondary box">
                     <h4>Berichten frequentie</h4>
@@ -47,13 +52,33 @@
                 </div>
             </div>
         </div>
+    
         <div class="row">
-          <div class="col-sm">
-            <div class="primary box">
-                <h4>Polariteit</h4>
-                <div class="polarity-container"></div>
+            <div class="col-sm-6">
+                <div class="primary box">
+                    <h4>Polariteit</h4>
+                    <div class="polarity-container"></div>
+                </div>
             </div>
-          </div>
+    
+            <div class="col-sm-6">
+                <div class="secondary box">
+                    <h4>Emoji Statistieken</h4>
+                    <div id="emojiStats">
+                        <div id="totalEmojis" class="emoji-total"></div>
+                        <div id="emojiChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="primary box">
+                    <h4>Emoji gebruik per persoon</h4>
+                    <div id="emojiPerPerson"></div>
+                </div>
+            </div>
         </div>
     </div>
 

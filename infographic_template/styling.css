@@ -88,3 +88,61 @@ th, td {
 th {
     font-weight: bold;
 }
+
+.emoji-card {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.emoji-total {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.emoji-person-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.emoji-person-card {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.emoji-bar {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    gap: 10px;
+}
+
+.emoji-bar .emoji {
+    font-size: 1.2em;
+    min-width: 30px;
+}
+
+.emoji-bar .count {
+    margin-left: auto;
+}
+
+.emoji-progress {
+    flex-grow: 1;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.emoji-progress-bar {
+    height: 100%;
+    background-color: #a8dadc;
+    transition: width 0.3s ease;
+}
