@@ -130,7 +130,7 @@ class Chat:
         return json.dumps(self.export)
     
     def saveFile(self) -> None:
-        f = open('infographic_template/data.json','w+')
+        f = open('infographic-react/src/data.json','w+')
         f.write(self.getJSON())
         f.close()
 
