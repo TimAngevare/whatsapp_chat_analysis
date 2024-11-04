@@ -21,6 +21,11 @@ class Chat:
             'people' : [],
             'language': None
         }
+        self.media_keywords = {
+            'afbeelding': 'pictures',
+            'sticker': 'stickers',
+            'audio': 'audio_files'
+        }
         # Common words to filter out for both languages
         self.common_filters = {
             'media_words': {'audio', 'image', 'video', 'gif', 'sticker', 'afbeelding', 'audio'},
@@ -122,7 +127,17 @@ class Chat:
                 return en_sentiment(text)[0]
         except:
             return 0.0  # Neutral sentiment if analysis fails
-    
+
+    def count_media_messages_per_person(self, person: str) -> dict:
+        person_messages = self.data[self.data['Sender'] == person]
+        media_counts = {media: 0 for media in self.media_keywords.values()}
+
+        for message in person_messages['Message']:
+            for keyword, media_type in self.media_keywords.items():
+                if keyword in message.lower():
+                    media_counts[media_type] += 1
+
+        return media_counts
     def getExport(self) -> dict:
         return self.export
     
@@ -142,14 +157,14 @@ class Chat:
         person_emoji_stats = self.analyze_emojis(person_messages)
         # Calculate the statistics
         stats = person_messages['sentiment'].describe()
-
+        avg_message = round(person_messages['Message'].apply(len).mean(),1)
         # Extract the specific values we need
         min_val = stats['min']
         q1 = stats['25%']
         median = stats['50%']
         q3 = stats['75%']
         max_val = stats['max']
-        person_stats = {'name': person, 'count' : len(person_messages), 'percentage' : round(percentage, 2), 'polarity' : [min_val, q1, median, q3, max_val],'first_message' : {'message' : first['Message'], 'timeStamp' : str(first['DateTime'])}, 'emoji_stats' : person_emoji_stats}
+        person_stats = {'name': person, 'count' : len(person_messages), 'percentage' : round(percentage, 2), 'polarity' : [min_val, q1, median, q3, max_val],'first_message' : {'message' : first['Message'], 'timeStamp' : str(first['DateTime'])}, 'emoji_stats' : person_emoji_stats, 'media_count' : self.count_media_messages_per_person(person), 'average_message_length': avg_message}
         return person_stats
     
     def analyse_time(self) -> dict:
@@ -231,6 +246,7 @@ class Chat:
         
         self.export['emoji_stats'] = self.analyze_emojis(self.data)
 
+        self.export['media_counts'] = self.count_media_messages_per_person('You')
         persons = self.data.Sender.unique()
         self.export['people'] = [
             self.analyse_per_person(person, message_count) 
