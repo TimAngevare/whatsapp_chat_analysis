@@ -1,7 +1,9 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 import {CaseUpperIcon } from 'lucide-react';
+
 const AverageLengthChart = ({ averageLengthData }) => {
+  
   const transformData = () => {
     return averageLengthData.map(person => ({
       x: person.name,
