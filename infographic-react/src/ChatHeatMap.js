@@ -5,8 +5,7 @@ const ChatHeatmap = ({ timeData }) => {
   // Transform the time data into the format ApexCharts expects
   const transformData = () => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    
-    // Create series data where each series represents an hour
+
     return Array.from({ length: 24 }, (_, hour) => ({
       name: `${hour}:00`,
       data: Object.entries(timeData).map(([day, hours]) => ({
@@ -15,6 +14,20 @@ const ChatHeatmap = ({ timeData }) => {
       }))
     }));
   };
+
+  // Function to calculate the maximum value in timeData
+  const getMaxValue = () => {
+    let max = 0;
+    for (const hours of Object.values(timeData)) {
+      const hourMax = Math.max(...hours);
+      if (hourMax > max) {
+        max = hourMax;
+      }
+    }
+    return max;
+  };
+
+  const maxValue = getMaxValue(); // Get the maximum value
 
   const options = {
     chart: {
@@ -27,7 +40,6 @@ const ChatHeatmap = ({ timeData }) => {
     dataLabels: {
       enabled: false
     },
-    colors: ["#7cc4ff"], // Green color to match your theme
     title: {
       style: {
         color: '#ffffff'
@@ -53,11 +65,33 @@ const ChatHeatmap = ({ timeData }) => {
     plotOptions: {
       heatmap: {
         colorScale: {
-          ranges: [{
-            from: 0,
-            to: 0,
-            color: '#16a34a20'
-          }]
+          ranges:  [
+            {
+              from: 0,
+              to: Math.ceil(maxValue * 0.05), // 20% of max
+              color: '#e0f7fa' // Light Blue for very low values
+            },
+            {
+              from: Math.ceil(maxValue * 0.05),
+              to: Math.ceil(maxValue * 0.1), // 40% of max
+              color: '#e0f7fa' // Light Blue for very low values
+            },
+            {
+              from: Math.ceil(maxValue * 0.1),
+              to: Math.ceil(maxValue * 0.2), // 60% of max
+              color: '#4fc3f7' // Blue for medium values
+            },
+            {
+              from: Math.ceil(maxValue * 0.2),
+              to: Math.ceil(maxValue * 0.4), // 80% of max
+              color: '#039be5' // Dark Blue for high values
+            },
+            {
+              from: Math.ceil(maxValue * 0.4),
+              to: maxValue, // Max value
+              color: '#01579b' // Navy Blue for very high values
+            }
+          ]
         }
       }
     }
@@ -65,13 +99,13 @@ const ChatHeatmap = ({ timeData }) => {
 
   return (
     <div className="bg-green-600 rounded-lg p-6 shadow-lg">
-        <h2 className="text-2xl font-bold">Message Frequency</h2>
-        <Chart 
-            options={options}
-            series={transformData()}
-            type="heatmap"
-            height={350}
-        />
+      <h2 className="text-2xl font-bold">Message Frequency</h2>
+      <Chart
+        options={options}
+        series={transformData()}
+        type="heatmap"
+        height={550}
+      />
     </div>
   );
 };
