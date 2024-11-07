@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState , useEffect } from 'react';
 import personalData from './data.json';
 import ChatHeatmap from './ChatHeatMap';
 import AverageLengthChart from './Components/AverageLengthChart';
@@ -11,7 +11,25 @@ import MediaStats from './Components/MediaStats';
 
 
 export default function ChatAnalysisDashboard() {
-  const [data, setData] = React.useState(personalData);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        //const response = await fetch('https://your-api-endpoint.com/get-chat-data');  // Replace with your actual API URL
+        //const result = await response.json();
+        setData(personalData);
+      } catch (error) {
+        console.error('Error fetching chat data:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (!data) {
+    return <div>Loading...</div>;
+  }
 
   const wordData = Object.entries(data.words)
     .map(([word, count]) => ({ word, count }))
