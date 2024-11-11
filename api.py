@@ -6,9 +6,17 @@ import uvicorn
 import os
 import json
 import analysis.chat as chat
+from playwright.async_api import async_playwright
 
 app = FastAPI()
 
+async def take_screenshot(url: str, output_path: str):
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
+        await page.goto(url)
+        await page.screenshot(path=output_path, full_page=True)
+        await browser.close()
 
 TEMP_DIR = "/tmp/uploads"
 
@@ -35,6 +43,17 @@ async def upload_zip(file: UploadFile = File(...)):
 
     # Return the processed data in JSON format
     return JSONResponse(content=new_chat.getJSON())
+
+@app.get("/screenshot")
+async def get_screenshot():
+    url = "http://localhost:3000/"  
+    output_path = "infographic.png"      
+
+    # Call the asynchronous screenshot function
+    await take_screenshot(url, output_path)
+
+    return {"message": "Screenshot taken successfully", "path": output_path}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
