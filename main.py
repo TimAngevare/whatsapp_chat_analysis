@@ -1,7 +1,6 @@
 import sys
 import analysis.chat as chat
 from playwright.sync_api import sync_playwright
-import os
 
 chat = chat.Chat(sys.argv[1])
 chat.read()
