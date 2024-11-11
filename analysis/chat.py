@@ -138,6 +138,29 @@ class Chat:
                     media_counts[media_type] += 1
 
         return media_counts
+
+    def analyze_weekly_messages(self) -> dict:
+        self.data['Year'] = self.data['DateTime'].dt.year
+        self.data['Week'] = self.data['DateTime'].dt.isocalendar().week
+
+        # Group by both year and week to ensure we include all weeks over time
+        weekly_group = self.data.groupby(['Year', 'Week']).size()
+
+        result = {}
+        min_year = self.data['Year'].min()
+        max_year = self.data['Year'].max()
+
+        # Create a structured result with each week of each year
+        for year in range(min_year, max_year + 1):
+            result[str(year)] = {}
+            for week in range(1, 53):  # Considering 52 weeks
+                if (year, week) in weekly_group.index:
+                    result[str(year)][str(week)] = int(weekly_group.loc[year, week])
+                else:
+                    result[str(year)][str(week)] = 0
+
+        return result
+
     def getExport(self) -> dict:
         return self.export
     
@@ -146,6 +169,9 @@ class Chat:
     
     def saveFile(self) -> None:
         f = open('infographic-react/src/data.json','w+')
+        f.write(self.getJSON())
+        f.close()
+        f = open('infographic-react/src/components/data.json', 'w+')
         f.write(self.getJSON())
         f.close()
 
@@ -252,6 +278,8 @@ class Chat:
             self.analyse_per_person(person, message_count) 
             for person in persons
         ]
+        self.export['weekly_message_counts'] = self.analyze_weekly_messages()
+
         self.export['time'] = self.analyse_time()
         self.export['words'] = self.get_top_10_words(self.data)
 

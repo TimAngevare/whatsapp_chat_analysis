@@ -8,6 +8,7 @@ import TopWords from './Components/TopWords';
 import EmojiStats from './Components/EmojiStats';
 import TotalStats from './Components/TotalStats';
 import MediaStats from './Components/MediaStats';
+import WeeklyMessageChart from "./Components/WeeklyMessageChart";
 
 
 export default function ChatAnalysisDashboard() {
@@ -55,6 +56,7 @@ export default function ChatAnalysisDashboard() {
 
           <AverageLengthChart averageLengthData={data.people}/>
         </div>
+        <WeeklyMessageChart weeklyCounts={data.weekly_message_counts} />
       </div>
     </div>
   );
