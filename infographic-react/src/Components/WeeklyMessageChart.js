@@ -2,13 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import { Activity } from 'lucide-react'; // Using the Activity icon
-import weeklyData from './data.json';
 
 // Register Chart.js components
 Chart.register(...registerables);
 
-const WeeklyMessageChart = () => {
-  const chartRef = useRef(null); // Ref to hold the chart instance
+export default function WeeklyMessageChart  ({ weeklyData }) {
+  const chartRef = useRef(null);
   const [showChart, setShowChart] = useState(false); // State to control chart visibility
 
   // Prepare labels and dataset for the chart
@@ -35,8 +34,8 @@ const WeeklyMessageChart = () => {
   };
 
   // Process data if available
-  if (weeklyData?.weekly_message_counts) {
-    processData(weeklyData.weekly_message_counts);
+  if (weeklyData) {
+    processData(weeklyData);
   }
 
   // Filter out future dates and slice the data from first positive index
@@ -138,5 +137,3 @@ const WeeklyMessageChart = () => {
     </div>
   );
 };
-
-export default WeeklyMessageChart;
