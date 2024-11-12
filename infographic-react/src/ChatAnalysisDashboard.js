@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import personalData from './data.json';
-import ChatHeatmap from './ChatHeatMap';
+import ChatHeatmap from './Components/ChatHeatMap';
 import AverageLengthChart from './Components/AverageLengthChart';
 import FirstMessages from './Components/FirstMessages';
 import MessageCount from './Components/MessageCount';
@@ -41,7 +41,7 @@ export default function ChatAnalysisDashboard() {
         {/* Header Stats */}
         <h2 className="text-2xl font-bold">The chat between {
           data.people.map((person, idx) => {
-            if (idx + 1 == data.people.length && idx == 1) {
+            if (idx + 1 === data.people.length && idx === 1) {
               return ' and ' + person.name;
             } else if (idx > 0) {
               return ', ' + person.name;
@@ -70,7 +70,7 @@ export default function ChatAnalysisDashboard() {
           <AverageLengthChart averageLengthData={data.people} />
           <FirstMessages people={data.people} />
         </div>
-        <WeeklyMessageChart weeklyCounts={data.weekly_message_counts} />
+        <WeeklyMessageChart weeklyData={data.weekly_message_counts} />
       </div>
     </div>
   );

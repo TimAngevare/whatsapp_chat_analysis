@@ -1,10 +1,8 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import zipfile
 import uvicorn
 import os
-import json
 import analysis.chat as chat
 from playwright.async_api import async_playwright
 
