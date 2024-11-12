@@ -2,6 +2,7 @@ import React from "react";
 import { BarChart } from 'lucide-react'; // Importing the statistics icon
 
 export default function TotalStats({ data }) {
+  const totalReadingTime = data.total_messages * 0.1
   return (
     <div className="bg-purple-600 rounded-lg p-6 shadow-lg">
       <div className="flex items-center justify-between">
@@ -18,6 +19,14 @@ export default function TotalStats({ data }) {
             {data.people.reduce((sum, p) => sum + p.emoji_stats.total_emoji_count, 0)}
           </div>
           <div className="text-purple-300">Total Emojis</div>
+        </div>
+
+         {/* Total Reading Time (from data.json) */}
+        <div className="bg-purple-700 rounded-lg p-4">
+          <div className="text-3xl font-bold">
+            {data.reading_time} min
+          </div>
+          <div className="text-purple-300">Total Reading Time</div>
         </div>
       </div>
     </div>

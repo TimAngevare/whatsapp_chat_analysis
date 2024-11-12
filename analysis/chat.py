@@ -86,6 +86,12 @@ class Chat:
             'top_emojis': top_emojis,
             'total_emoji_count': len(all_emojis)
         }
+    def calculate_reading_time(self, text: str) -> float:
+        """Estimate the reading time based on the word count."""
+        word_count = len(re.findall(r'\w+', text))
+        words_per_minute = 200  # Average reading speed (wpm)
+        reading_time_minutes = word_count / words_per_minute
+        return round(reading_time_minutes, 2)
 
     def read(self) -> None:
         with ZipFile(self.filePath, 'r') as file:
@@ -279,7 +285,7 @@ class Chat:
             for person in persons
         ]
         self.export['weekly_message_counts'] = self.analyze_weekly_messages()
-
+        self.export['reading_time'] =self.calculate_reading_time(all_messages)
         self.export['time'] = self.analyse_time()
         self.export['words'] = self.get_top_10_words(self.data)
 
