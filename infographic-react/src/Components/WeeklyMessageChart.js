@@ -1,67 +1,75 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
+import { Activity } from 'lucide-react'; // Using the Activity icon
 import weeklyData from './data.json';
 
-// Register all necessary components (scales, elements, etc.)
+// Register Chart.js components
 Chart.register(...registerables);
 
 const WeeklyMessageChart = () => {
   const chartRef = useRef(null); // Ref to hold the chart instance
   const [showChart, setShowChart] = useState(false); // State to control chart visibility
 
-  console.log('Weekly Data:', weeklyData); // Log the data to the console
-  const data = weeklyData.weekly_message_counts;
-
   // Prepare labels and dataset for the chart
   const labels = [];
   const dataset = [];
+
   let firstPositiveIndex = -1; // To store the index of the first positive value
 
-  // Check if data is available and process it
-  if (data) {
-    Object.keys(data).forEach(year => {
-      Object.keys(data[year]).forEach(week => {
+  // Process the weekly data
+  const processData = (data) => {
+    Object.keys(data).forEach((year) => {
+      Object.keys(data[year]).forEach((week) => {
         const weekDate = new Date(year, 0, 1 + (week - 1) * 7); // Get the first day of the week
         labels.push(weekDate.toISOString().split('T')[0]); // Store date in 'YYYY-MM-DD' format
         const count = data[year][week];
         dataset.push(count);
 
-        // Set the firstPositiveIndex if a positive count is found and not already set
+        // Set first positive index
         if (count > 0 && firstPositiveIndex === -1) {
-          firstPositiveIndex = dataset.length - 1; // Store the current index
+          firstPositiveIndex = dataset.length - 1;
         }
       });
     });
+  };
+
+  // Process data if available
+  if (weeklyData?.weekly_message_counts) {
+    processData(weeklyData.weekly_message_counts);
   }
 
-  // Determine the current date
-  const today = new Date();
+  // Filter out future dates and slice the data from first positive index
+  const filterData = (labels, dataset) => {
+    const today = new Date();
+    const slicedLabels = firstPositiveIndex !== -1 ? labels.slice(firstPositiveIndex) : [];
+    const slicedDataset = firstPositiveIndex !== -1 ? dataset.slice(firstPositiveIndex) : [];
 
-  // Slice the labels and dataset from the first positive index
-  const slicedLabels = firstPositiveIndex !== -1 ? labels.slice(firstPositiveIndex) : [];
-  const slicedDataset = firstPositiveIndex !== -1 ? dataset.slice(firstPositiveIndex) : [];
+    const finalLabels = [];
+    const finalDataset = [];
 
-  // Filter out any future dates
-  const finalLabels = [];
-  const finalDataset = [];
-  for (let i = 0; i < slicedLabels.length; i++) {
-    const labelDate = new Date(slicedLabels[i]);
-    if (labelDate <= today) {
-      finalLabels.push(slicedLabels[i]);
-      finalDataset.push(slicedDataset[i]);
+    for (let i = 0; i < slicedLabels.length; i++) {
+      const labelDate = new Date(slicedLabels[i]);
+      if (labelDate <= today) {
+        finalLabels.push(slicedLabels[i]);
+        finalDataset.push(slicedDataset[i]);
+      }
     }
-  }
 
-  // Only create chart data if there is data
+    return { finalLabels, finalDataset };
+  };
+
+  const { finalLabels, finalDataset } = filterData(labels, dataset);
+
+  // Prepare chart data with updated colors
   const chartData = {
     labels: finalLabels,
     datasets: [
       {
         label: 'Messages Per Week',
         data: finalDataset,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: '#FF6347', // Tomato color for better contrast
+        backgroundColor: 'rgba(255, 99, 71, 0.2)', // Light tomato color for background
         fill: true,
         lineTension: 0.1,
       },
@@ -73,6 +81,35 @@ const WeeklyMessageChart = () => {
     scales: {
       y: {
         beginAtZero: true,
+        grid: {
+          color: '#2c2c2c', // Darker grid lines for better visibility
+        },
+        ticks: {
+          font: {
+            size: 12,
+            weight: 'bold',
+          },
+          color: '#fff', // White ticks for better contrast
+        },
+      },
+      x: {
+        ticks: {
+          font: {
+            size: 12,
+            weight: 'bold',
+          },
+          color: '#fff', // White ticks for better contrast
+        },
+        grid: {
+          color: '#2c2c2c', // Darker grid lines for better visibility
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        labels: {
+          color: '#fff', // White legend labels for better contrast
+        },
       },
     },
   };
@@ -87,12 +124,16 @@ const WeeklyMessageChart = () => {
   }, []);
 
   return (
-    <div>
-      <h3>Messages Per Week</h3>
+    <div className="bg-purple-600 rounded-lg p-6 shadow-lg relative">
+      <h3 className="text-2xl font-bold text-white">Messages Per Week</h3>
+
+      {/* Activity icon at the top-right */}
+      <Activity size={32} className="text-purple-300 absolute top-4 right-4" />
+
       {finalDataset.length > 0 ? (
         <Line ref={chartRef} data={chartData} options={options} />
       ) : (
-        <div>No messages to display yet.</div> // Message before any positive count is found
+        <div className="text-white">No messages to display yet.</div>
       )}
     </div>
   );

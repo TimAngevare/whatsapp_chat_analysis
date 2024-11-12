@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import personalData from './data.json';
 import ChatHeatmap from './ChatHeatMap';
 import AverageLengthChart from './Components/AverageLengthChart';
@@ -8,8 +8,7 @@ import TopWords from './Components/TopWords';
 import EmojiStats from './Components/EmojiStats';
 import TotalStats from './Components/TotalStats';
 import MediaStats from './Components/MediaStats';
-import WeeklyMessageChart from "./Components/WeeklyMessageChart";
-
+import WeeklyMessageChart from './Components/WeeklyMessageChart';
 
 export default function ChatAnalysisDashboard() {
   const [data, setData] = useState(null);
@@ -34,7 +33,7 @@ export default function ChatAnalysisDashboard() {
 
   const wordData = Object.entries(data.words)
     .map(([word, count]) => ({ word, count }))
-    .slice(0, 5); 
+    .slice(0, 5);
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
@@ -42,7 +41,7 @@ export default function ChatAnalysisDashboard() {
         {/* Header Stats */}
         <h2 className="text-2xl font-bold">The chat between {
           data.people.map((person, idx) => {
-            if (idx + 1 == data.people.length && idx == 1 ){
+            if (idx + 1 == data.people.length && idx == 1) {
               return ' and ' + person.name;
             } else if (idx > 0) {
               return ', ' + person.name;
@@ -50,29 +49,26 @@ export default function ChatAnalysisDashboard() {
               return person.name;
             }
           })
+        }</h2>
 
-          }
-        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Message Count Bars */}
-          <MessageCount people={data.people}/>
-          <TopWords wordData={wordData}/>
+          <MessageCount people={data.people} />
+          <TopWords wordData={wordData} />
         </div>
 
         <ChatHeatmap timeData={data.time} />
 
         {/* First Messages */}
-        <FirstMessages people={data.people}/>
 
-        {/* Emoji Stats */}
+
+        <EmojiStats people={data.people} />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <EmojiStats people={data.people}/>
-
-          <TotalStats data={ data }/>
-          
-          <MediaStats people={data.people}/>
-
-          <AverageLengthChart averageLengthData={data.people}/>
+          <TotalStats data={data} />
+          <MediaStats people={data.people} />
+          <AverageLengthChart averageLengthData={data.people} />
+          <FirstMessages people={data.people} />
         </div>
         <WeeklyMessageChart weeklyCounts={data.weekly_message_counts} />
       </div>

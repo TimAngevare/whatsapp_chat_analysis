@@ -1,5 +1,6 @@
 import React from 'react';
 import Chart from "react-apexcharts";
+import { Clock } from 'lucide-react'; // Importing the clock icon from lucide-react
 
 const ChatHeatmap = ({ timeData }) => {
   // Transform the time data into the format ApexCharts expects
@@ -98,7 +99,10 @@ const ChatHeatmap = ({ timeData }) => {
   };
 
   return (
-    <div className="bg-green-600 rounded-lg p-6 shadow-lg">
+    <div className="bg-green-600 rounded-lg p-6 shadow-lg relative">
+      {/* Clock icon at the top right */}
+      <Clock size={32} className="text-white absolute top-4 right-4" />
+
       <h2 className="text-2xl font-bold">Message Frequency</h2>
       <Chart
         options={options}

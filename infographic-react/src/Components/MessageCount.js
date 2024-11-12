@@ -4,23 +4,25 @@ import { MessageCircle } from 'lucide-react';
 
 export default function MessageCount ({ people }) {
     return (
-        <div className="bg-pink-600 rounded-lg p-6 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div className="w-full">
-                <h2 className="text-2xl font-bold">Message Count</h2>
-                <div className="mt-4 space-y-4">
-                  {people.map(person => (
-                    <MessageCountLabel
-                      key={person.name}
-                      person={person.name}
-                      percentage={person.percentage}
-                      count={person.count}
-                    />
-                  ))}
+        <div className="bg-pink-600 rounded-lg p-6 shadow-lg relative min-h-[300px] flex flex-col">
+            <MessageCircle size={32} className="text-pink-300 absolute top-4 right-4" />
+
+            {/* Title at the top */}
+            <h2 className="text-2xl font-bold mb-4">Message Count</h2>
+
+            {/* Center the chart area */}
+            <div className="flex-grow flex items-center justify-center">
+                <div className="space-y-4 w-full">
+                    {people.map(person => (
+                        <MessageCountLabel
+                            key={person.name}
+                            person={person.name}
+                            percentage={person.percentage}
+                            count={person.count}
+                        />
+                    ))}
                 </div>
-              </div>
-              <MessageCircle size={48} className="text-pink-300 ml-4" />
             </div>
-          </div>
+        </div>
     );
 }

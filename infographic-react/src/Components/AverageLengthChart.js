@@ -1,9 +1,9 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
-import {CaseUpperIcon } from 'lucide-react';
+import { CaseUpperIcon } from 'lucide-react';
 
 const AverageLengthChart = ({ averageLengthData }) => {
-  
+
   const transformData = () => {
     return averageLengthData.map(person => ({
       x: person.name,
@@ -22,6 +22,7 @@ const AverageLengthChart = ({ averageLengthData }) => {
     plotOptions: {
       bar: {
         horizontal: true,
+        borderRadius: 10, // Rounded corners for bars
         colors: {
           ranges: [{
             from: 0,
@@ -61,19 +62,22 @@ const AverageLengthChart = ({ averageLengthData }) => {
       mode: 'dark'
     },
     title: {
-      text: 'Average Message Length per Person',
+
       style: {
-        color: '#ffffff'
+        color: '#ffffff',
+        fontSize: '1.25rem', // Slightly smaller title size
+        fontWeight: 'bold',
+        marginBottom: '1rem' // Added space between the title and chart
       }
     }
   };
 
   return (
-    <div className="bg-green-600 rounded-lg p-6 shadow-lg">
+    <div className="bg-indigo-600 rounded-lg p-6 shadow-lg">
       <div className="flex items-center justify-between mb-4">
         {/* Title and Icon */}
-        <h2 className="text-2xl font-bold">Average Message Length</h2>
-        <CaseUpperIcon className="text-green-300" size={32} /> {/* Icon for Message Length */}
+        <h2 className="text-2xl font-bold text-white">Average Message Length</h2>
+        <CaseUpperIcon className="text-indigo-300" size={32} />
       </div>
 
       <Chart
