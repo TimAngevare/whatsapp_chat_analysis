@@ -15,9 +15,11 @@ class Chat:
         self.data = {'DateTime' : [], 'Sender' : [], 'Message' : []}
         self.pattern = re.compile(
     r'\[(\d{2}-\d{2}-\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
+        self.url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
         
         self.export = {
             'total_messages' : 0,
+            'total_urls' : 0,
             'people' : [],
             'language': None
         }
@@ -177,9 +179,6 @@ class Chat:
         f = open('infographic-react/src/data.json','w+')
         f.write(self.getJSON())
         f.close()
-        f = open('infographic-react/src/components/data.json', 'w+')
-        f.write(self.getJSON())
-        f.close()
 
     def analyse_per_person(self, person : str, message_count : int) -> dict:
         person_messages = self.data[self.data.Sender==person]
@@ -229,7 +228,7 @@ class Chat:
     
     def clean_message(self, message: str) -> str:
         # Remove URLs
-        message = re.sub(r'http\S+|www.\S+', '', message)
+        message = re.sub(self.url_pattern, '', message)
         # Remove special characters but keep emojis
         message = ''.join(c for c in message if c.isalnum() or c.isspace() or emoji.is_emoji(c))
         # Remove numbers
@@ -269,6 +268,7 @@ class Chat:
         
         # Detect language once for the entire chat
         all_messages = ' '.join(self.data['Message'].astype(str))
+        self.export['total_urls'] = len(re.findall(self.url_pattern, all_messages))
         language = self.detect_language(all_messages)
         
         # Apply sentiment analysis based on detected language
@@ -276,9 +276,6 @@ class Chat:
             lambda x: self.analyze_sentiment(x, language)
         )
         
-        self.export['emoji_stats'] = self.analyze_emojis(self.data)
-
-        self.export['media_counts'] = self.count_media_messages_per_person('You')
         persons = self.data.Sender.unique()
         self.export['people'] = [
             self.analyse_per_person(person, message_count) 

@@ -4,8 +4,9 @@ import { Smile } from 'lucide-react';
 export default function EmojiStats({ people }) {
   return (
     <div className="bg-indigo-600 rounded-lg p-6 shadow-lg">
+      {/* Title and Icon Section */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Emoji Usage</h2>
+        <h2 className="text-2xl font-bold text-center w-full">Top Emojis Usage</h2> {/* Updated title */}
         <Smile size={32} className="text-indigo-300" />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

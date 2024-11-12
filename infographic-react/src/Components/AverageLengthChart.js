@@ -22,7 +22,7 @@ const AverageLengthChart = ({ averageLengthData }) => {
     plotOptions: {
       bar: {
         horizontal: true,
-        borderRadius: 10, // Rounded corners for bars
+        borderRadius: 20, // Rounded corners for bars
         colors: {
           ranges: [{
             from: 0,
@@ -47,7 +47,7 @@ const AverageLengthChart = ({ averageLengthData }) => {
     },
     yaxis: {
       title: {
-        text: 'Participants',
+
         style: {
           color: '#ffffff'
         }
@@ -62,7 +62,6 @@ const AverageLengthChart = ({ averageLengthData }) => {
       mode: 'dark'
     },
     title: {
-
       style: {
         color: '#ffffff',
         fontSize: '1.25rem', // Slightly smaller title size
@@ -75,8 +74,8 @@ const AverageLengthChart = ({ averageLengthData }) => {
   return (
     <div className="bg-indigo-600 rounded-lg p-6 shadow-lg">
       <div className="flex items-center justify-between mb-4">
-        {/* Title and Icon */}
-        <h2 className="text-2xl font-bold text-white">Average Message Length</h2>
+        {/* Title centered */}
+        <h2 className="text-2xl font-bold text-white w-full text-center">Average Message Length</h2>
         <CaseUpperIcon className="text-indigo-300" size={32} />
       </div>
 
