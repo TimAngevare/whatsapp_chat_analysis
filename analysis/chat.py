@@ -174,7 +174,7 @@ class Chat:
         return json.dumps(self.export)
     
     def saveFile(self) -> None:
-        f = open('./data.json','w+')
+        f = open('infographic-react/src/data.json','w+')
         f.write(self.getJSON())
         f.close()
 
@@ -262,6 +262,11 @@ class Chat:
         all_messages = ' '.join(self.data['Message'].astype(str))
         self.export['total_urls'] = len(re.findall(self.url_pattern, all_messages))
         language = self.detect_language(all_messages)
+        
+        # Apply sentiment analysis based on detected language
+        self.data['sentiment'] = self.data['Message'].apply(
+            lambda x: self.analyze_sentiment(x, language)
+        )
         
         persons = self.data.Sender.unique()
         self.export['people'] = [
