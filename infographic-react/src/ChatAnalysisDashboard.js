@@ -59,6 +59,7 @@ export default function ChatAnalysisDashboard() {
 
         <ChatHeatmap timeData={data.time} />
 
+
         {/* First Messages */}
 
 
