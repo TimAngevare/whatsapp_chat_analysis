@@ -1,17 +1,18 @@
 import pandas as pd
 import json
-from zipfile import ZipFile 
 import re
+from zipfile import ZipFile
 from collections import Counter
-from pattern.nl import sentiment as nl_sentiment # type: ignore
-from pattern.en import sentiment as en_sentiment # type: ignore
-from langdetect import detect # type: ignore
+from langdetect import detect
 import emoji
 
 
 class Chat:
-    def __init__(self, filePath : str) -> None:
-        self.filePath = filePath
+    def __init__(self, file_content) -> None:
+        if isinstance(file_content, str):
+            self.file_content = file_content.encode('utf-8')
+        else:
+            self.file_content = file_content
         self.data = {'DateTime' : [], 'Sender' : [], 'Message' : []}
         self.pattern = re.compile(
     r'\[(\d{2}-\d{2}-\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
@@ -96,16 +97,22 @@ class Chat:
         return round(reading_time_minutes, 2)
 
     def read(self) -> None:
-        with ZipFile(self.filePath, 'r') as file:
-            file.extractall(path='./')
-            with open('./_chat.txt', 'r', encoding='utf-8') as chat:
-                #skip end-end encrypted message
-                next(chat)
-                first_line = chat.readline()
+        
+        with ZipFile(self.file_content, 'r') as zip_file:
+            with zip_file.open('_chat.txt') as chat:
+                # Read and decode the content
+                # Skip end-to-end encrypted message
+                chat.readline()  # Skip first line
+                
+                # Read and decode first line
+                first_line = chat.readline().decode('utf-8')
+                
                 if ' contact.' not in first_line:
-                    content = first_line + chat.read()
+                    # Read and decode remaining content
+                    remaining_content = chat.read().decode('utf-8')
+                    content = first_line + remaining_content
                 else:
-                    content = chat.read()
+                    content = chat.read().decode('utf-8')
         
         matches = self.pattern.findall(content)
 
@@ -126,15 +133,6 @@ class Chat:
             return detect(text)
         except:
             return 'en'  # Default to English if detection fails
-    
-    def analyze_sentiment(self, text: str, language: str) -> float:
-        try:
-            if language == 'nl':
-                return nl_sentiment(text)[0]
-            else:
-                return en_sentiment(text)[0]
-        except:
-            return 0.0  # Neutral sentiment if analysis fails
 
     def count_media_messages_per_person(self, person: str) -> dict:
         person_messages = self.data[self.data['Sender'] == person]
@@ -187,15 +185,9 @@ class Chat:
         
         person_emoji_stats = self.analyze_emojis(person_messages)
         # Calculate the statistics
-        stats = person_messages['sentiment'].describe()
         avg_message = round(person_messages['Message'].apply(len).mean(),1)
         # Extract the specific values we need
-        min_val = stats['min']
-        q1 = stats['25%']
-        median = stats['50%']
-        q3 = stats['75%']
-        max_val = stats['max']
-        person_stats = {'name': person, 'count' : len(person_messages), 'percentage' : round(percentage, 2), 'polarity' : [min_val, q1, median, q3, max_val],'first_message' : {'message' : first['Message'], 'timeStamp' : str(first['DateTime'])}, 'emoji_stats' : person_emoji_stats, 'media_count' : self.count_media_messages_per_person(person), 'average_message_length': avg_message}
+        person_stats = {'name': person, 'count' : len(person_messages), 'percentage' : round(percentage, 2),'first_message' : {'message' : first['Message'], 'timeStamp' : str(first['DateTime'])}, 'emoji_stats' : person_emoji_stats, 'media_count' : self.count_media_messages_per_person(person), 'average_message_length': avg_message}
         return person_stats
     
     def analyse_time(self) -> dict:
