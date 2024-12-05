@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uvicorn
 import os
-import analysis.chat as chat
+import analysis.chatAnalysis.chat as chat
 from playwright.async_api import async_playwright
 
 app = FastAPI()
