@@ -263,11 +263,6 @@ class Chat:
         self.export['total_urls'] = len(re.findall(self.url_pattern, all_messages))
         language = self.detect_language(all_messages)
         
-        # Apply sentiment analysis based on detected language
-        self.data['sentiment'] = self.data['Message'].apply(
-            lambda x: self.analyze_sentiment(x, language)
-        )
-        
         persons = self.data.Sender.unique()
         self.export['people'] = [
             self.analyse_per_person(person, message_count) 
