@@ -281,18 +281,13 @@ class Chat:
         self.export['total_urls'] = len(re.findall(self.url_pattern, all_messages))
         language = self.detect_language(all_messages)
         
-        # Apply sentiment analysis based on detected language
-        self.data['sentiment'] = self.data['Message'].apply(
-            lambda x: self.analyze_sentiment(x, language)
-        )
-        
         persons = self.data.Sender.unique()
         self.export['people'] = [
             self.analyse_per_person(person, message_count) 
             for person in persons
         ]
-        self.export['weekly_message_counts'] = self.analyze_weekly_messages()
+        self.export['weekly_message_counts'] = self.analyse_time()
         self.export['reading_time'] =self.calculate_reading_time(all_messages)
-        self.export['time'] = self.analyse_time()
+        self.export['time'] = self.analyze_average_6hour_intervals()
         self.export['words'] = self.get_top_10_words(self.data)
 
