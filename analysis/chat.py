@@ -145,25 +145,43 @@ class Chat:
 
         return media_counts
 
-    def analyze_weekly_messages(self) -> dict:
-        self.data['Year'] = self.data['DateTime'].dt.year
-        self.data['Week'] = self.data['DateTime'].dt.isocalendar().week
+    def analyze_average_6hour_intervals(self) -> dict:
+        self.data['DayOfWeek'] = self.data['DateTime'].dt.day_name()
+        self.data['Hour'] = self.data['DateTime'].dt.hour
 
-        # Group by both year and week to ensure we include all weeks over time
-        weekly_group = self.data.groupby(['Year', 'Week']).size()
+        # Define 6-hour intervals
+        def get_6hour_interval(hour):
+            if 0 <= hour < 6:
+                return '00:00–06:00'
+            elif 6 <= hour < 12:
+                return '06:00–12:00'
+            elif 12 <= hour < 18:
+                return '12:00–18:00'
+            else:
+                return '18:00–24:00'
 
-        result = {}
-        min_year = self.data['Year'].min()
-        max_year = self.data['Year'].max()
+        # Apply interval mapping
+        self.data['6HourInterval'] = self.data['Hour'].apply(get_6hour_interval)
 
-        # Create a structured result with each week of each year
-        for year in range(min_year, max_year + 1):
-            result[str(year)] = {}
-            for week in range(1, 53):  # Considering 52 weeks
-                if (year, week) in weekly_group.index:
-                    result[str(year)][str(week)] = int(weekly_group.loc[year, week])
-                else:
-                    result[str(year)][str(week)] = 0
+        # Group by DayOfWeek and 6HourInterval, then calculate the mean
+        grouped = (
+            self.data.groupby(['DayOfWeek', '6HourInterval'])
+            .size()
+            .reset_index(name='Count')
+        )
+
+        # Create a structured dictionary with days and intervals
+        result = {day: {interval: 0 for interval in ['00:00–06:00', '06:00–12:00', '12:00–18:00', '18:00–24:00']}
+                  for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']}
+
+        for _, row in grouped.iterrows():
+            result[row['DayOfWeek']][row['6HourInterval']] = row['Count']
+
+        # Calculate the average messages per 6-hour interval for each day
+        total_days = len(self.data['DateTime'].dt.date.unique())
+        for day in result:
+            for interval in result[day]:
+                result[day][interval] /= total_days
 
         return result
 
