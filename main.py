@@ -1,5 +1,5 @@
 import sys
-import analysis.chat as chat
+import analysis.chatAnalysis.chat as chat
 from playwright.sync_api import sync_playwright
 
 chat = chat.Chat(sys.argv[1])

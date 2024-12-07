@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import personalData from './data.json';
+//import personalData from './data.json';
 import ChatHeatmap from './Components/ChatHeatMap';
 import AverageLengthChart from './Components/AverageLengthChart';
 import FirstMessages from './Components/FirstMessages';
@@ -16,9 +16,9 @@ export default function ChatAnalysisDashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        //const response = await fetch('https://your-api-endpoint.com/get-chat-data');  // Replace with your actual API URL
-        //const result = await response.json();
-        setData(personalData);
+        const response = await fetch('/data.json');  // Replace with your actual API URL
+        const result = await response.json();
+        setData(result);
       } catch (error) {
         console.error('Error fetching chat data:', error);
       }
