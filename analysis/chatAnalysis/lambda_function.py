@@ -25,13 +25,12 @@ def lambda_handler(event, context):
     }
 
     try:
-        if event['resource'] == "/analyze-chat" and event['httpMethod'] == "POST":
-            if 'isBase64Encoded' in event and event['isBase64Encoded']:
-            # Handle base64 encoded body
-                binary_body = base64.b64decode(event['body'])
-            else:
-                # Handle binary body
-                binary_body = event['body'].encode('utf-8') if isinstance(event['body'], str) else event['body']
+        if event.get('resource') == "/analyze-chat" and event.get('httpMethod') == "POST":
+            
+            binary_body = (base64.b64decode(event['body']) 
+                         if event.get('isBase64Encoded') 
+                         else event.get('body', '').encode('utf-8'))
+            
             zip_bytes = io.BytesIO(binary_body)
 
             json_export = analyze_chat(zip_bytes)
@@ -47,16 +46,21 @@ def lambda_handler(event, context):
             #encoded_file = take_screenshot()
             body = json.dumps({'image' : base64_image})
         else:
-            body = "Unsupported route or method: " + event['path']       
-    except KeyError:
-        statusCode = 400
-        body = 'Unsupported route: ' + event['path']
-    body = json.dumps(body)
-    res = {
-        "statusCode": statusCode,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": body
-    }
+            body = "Unsupported route or method: " + event['path']
+        
+        res = {
+            "statusCode": statusCode,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": json.dumps(body)
+        }
+
+    except Exception as e:
+        res = {
+            "statusCode": 400,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({"error": str(e)})
+        }
+    
     return res
