@@ -144,10 +144,10 @@ def create_driver(custom_config: list = None) -> Chrome:
     logging.info("Driver chromedriver initialized in: %s", CHROMEDRIVER_EXEC_PATH)
     return driver
 
-def take_screenshot(driver, url, element_id):
+def take_screenshot(driver, url, element_id, timeout):
     driver.get(url)
      
-    element = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.ID, element_id)))
+    element = WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.ID, element_id)))
     
     total_height = driver.execute_script("return document.body.parentNode.scrollHeight")
     total_width = driver.execute_script("return document.body.parentNode.scrollWidth")
