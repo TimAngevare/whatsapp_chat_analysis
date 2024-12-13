@@ -39,7 +39,7 @@ export default function ChatAnalysisDashboard() {
     <div className="p-6 bg-gray-900 min-h-screen text-white">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Stats */}
-        <h2 className="text-2xl font-bold">The chat between {
+        <h2 className="text-2xl font-bold" id='title'>The chat between {
           data.people.map((person, idx) => {
             if (idx + 1 === data.people.length && idx === 1) {
               return ' and ' + person.name;
