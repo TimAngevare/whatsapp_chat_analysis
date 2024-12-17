@@ -3,21 +3,29 @@ import json
 import re
 from zipfile import ZipFile
 from collections import Counter
-from langdetect import detect
+import numpy as np
 import emoji
 
+def convert(o):
+        if isinstance(o, (np.int64, np.int32)):
+            return int(o)
+        if isinstance(o, (np.float64, np.float32)):
+            return float(o)
+        raise TypeError(f"Type {type(o)} not serializable") 
 
 class Chat:
     def __init__(self, file_content) -> None:
-        if isinstance(file_content, str):
-            self.file_content = file_content.encode('utf-8')
-        else:
-            self.file_content = file_content
-        self.data = {'DateTime' : [], 'Sender' : [], 'Message' : []}
-        self.pattern = re.compile(
-    r'\[(\d{2}-\d{2}-\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
-        self.url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
+        self.file_content = file_content.encode('utf-8') if isinstance(file_content, str) else file_content
+        self.data = pd.DataFrame()
+        self.pattern = re.compile(r'\[(\d{2}-\d{2}-\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
+        self.url_pattern = re.compile(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
+        self.word_pattern = re.compile(r'\w+')
+
+        self.intervals = ['00:00–06:00', '06:00–12:00', '12:00–18:00', '18:00–24:00']
+        self.days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         
+        self._emoji_cache = {}
+
         self.export = {
             'total_messages' : 0,
             'total_urls' : 0,
@@ -67,72 +75,66 @@ class Chat:
         }
     
     def extract_emojis(self, text: str) -> list:
+        if text in self._emoji_cache:
+            return self._emoji_cache[text]
         
-        return [c for c in text if emoji.is_emoji(c)]
+        result = [c for c in text if emoji.is_emoji(c)]
+        self._emoji_cache[text] = result
+        return result
 
     def analyze_emojis(self, df: pd.DataFrame, top_n: int = 10) -> dict:
         
         all_emojis = []
+        for chunk in [df[i:i+1000] for i in range(0, len(df), 1000)]:
+            chunk_emojis = []
+            for message in chunk['Message']:
+                emojis = self.extract_emojis(str(message))
+                chunk_emojis.extend(emojis)
+            all_emojis.extend(chunk_emojis)
         
-        # Extract emojis from all messages
-        for message in df['Message']:
-            emojis_in_message = self.extract_emojis(str(message))
-            all_emojis.extend(emojis_in_message)
-        
-        # Count emojis
         emoji_counter = Counter(all_emojis)
-        
-        # Get top N emojis with their counts
-        top_emojis = dict(emoji_counter.most_common(top_n))
-        
         return {
-            'top_emojis': top_emojis,
-            'total_emoji_count': len(all_emojis)
+            'top_emojis': dict(emoji_counter.most_common(top_n)),
+            'total_emoji_count': int(len(all_emojis))
         }
+        
     def calculate_reading_time(self, text: str) -> float:
         """Estimate the reading time based on the word count."""
-        word_count = len(re.findall(r'\w+', text))
-        words_per_minute = 200  # Average reading speed (wpm)
-        reading_time_minutes = word_count / words_per_minute
-        return round(reading_time_minutes, 2)
+        word_count = len(self.word_pattern.findall(text))
+        return round(word_count / 200, 2)
 
     def read(self) -> None:
         
         with ZipFile(self.file_content, 'r') as zip_file:
             with zip_file.open('_chat.txt') as chat:
-                # Read and decode the content
-                # Skip end-to-end encrypted message
-                chat.readline()  # Skip first line
+                chunk_size = 1024 * 1024  # 1MB chunks
+                content = []
+                while True:
+                    chunk = chat.read(chunk_size)
+                    if not chunk:
+                        break
+                    content.append(chunk.decode('utf-8'))
+                content = ''.join(content)
                 
-                # Read and decode first line
-                first_line = chat.readline().decode('utf-8')
-                
-                if ' contact.' not in first_line:
-                    # Read and decode remaining content
-                    remaining_content = chat.read().decode('utf-8')
-                    content = first_line + remaining_content
-                else:
-                    content = chat.read().decode('utf-8')
+                # Process content
+                lines = content.splitlines()[1:]  # Skip first line
+                if ' contact.' in lines[0]:
+                    lines = lines[1:]  # Skip second line if needed
+                content = '\n'.join(lines)
         
         matches = self.pattern.findall(content)
 
-        for match in matches:
-            date, time, sender, message = match
-            self.data['DateTime'].append(date + ' ' + time)
-            self.data['Sender'].append(sender)
-            self.data['Message'].append(message)
+        data = {
+            'DateTime': [f"{date} {time}" for date, time, _, _ in matches],
+            'Sender': [sender for _, _, sender, _ in matches],
+            'Message': [message for _, _, _, message in matches]
+        }
         
-        self.data = pd.DataFrame(self.data)
-        self.data['DateTime'] = pd.to_datetime(self.data['DateTime'],format='%d-%m-%Y %H:%M:%S')
+        self.data = pd.DataFrame(data)
+        self.data['DateTime'] = pd.to_datetime(self.data['DateTime'], format='%d-%m-%Y %H:%M:%S')
     
     def getData(self) -> pd.DataFrame:
         return self.data
-    
-    def detect_language(self, text: str) -> str:
-        try:
-            return detect(text)
-        except:
-            return 'en'  # Default to English if detection fails
 
     def count_media_messages_per_person(self, person: str) -> dict:
         person_messages = self.data[self.data['Sender'] == person]
@@ -151,45 +153,35 @@ class Chat:
 
         # Define 6-hour intervals
         def get_6hour_interval(hour):
-            if 0 <= hour < 6:
-                return '00:00–06:00'
-            elif 6 <= hour < 12:
-                return '06:00–12:00'
-            elif 12 <= hour < 18:
-                return '12:00–18:00'
-            else:
-                return '18:00–24:00'
+            if hour < 6:
+                return self.intervals[0]
+            elif hour < 12:
+                return self.intervals[1]
+            elif hour < 18:
+                return self.intervals[2]
+            return self.intervals[3]
 
         # Apply interval mapping
         self.data['6HourInterval'] = self.data['Hour'].apply(get_6hour_interval)
 
         # Group by DayOfWeek and 6HourInterval, then calculate the mean
-        grouped = (
-            self.data.groupby(['DayOfWeek', '6HourInterval'])
-            .size()
-            .reset_index(name='Count')
-        )
-
-        # Create a structured dictionary with days and intervals
-        result = {day: {interval: 0 for interval in ['00:00–06:00', '06:00–12:00', '12:00–18:00', '18:00–24:00']}
-                  for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']}
-
-        for _, row in grouped.iterrows():
-            result[row['DayOfWeek']][row['6HourInterval']] = row['Count']
-
-        # Calculate the average messages per 6-hour interval for each day
-        total_days = len(self.data['DateTime'].dt.date.unique())
-        for day in result:
-            for interval in result[day]:
-                result[day][interval] /= total_days
-
+        grouped = self.data.groupby(['DayOfWeek', '6HourInterval']).size()
+        total_days = int(len(self.data['DateTime'].dt.date.unique()))
+        
+        result = {day: {interval: 0 for interval in self.intervals} for day in self.days}
+        
+        for (day, interval), count in grouped.items():
+            if day in result:
+                result[day][interval] = count / total_days
+                
         return result
 
     def getExport(self) -> dict:
-        return self.export
-    
-    def getJSON(self) -> json.dump:
-        return json.dumps(self.export)
+        return self.export   
+
+    def getJSON(self) -> str:
+        return json.dumps(self.export, default=convert)
+
     
     def saveFile(self) -> None:
         f = open('infographic-react/src/data.json','w+')
@@ -211,14 +203,17 @@ class Chat:
     def analyse_time(self) -> dict:
         self.data['DayOfWeek'] = self.data['DateTime'].dt.dayofweek + 1  # Adding 1 to make it 1-7 instead of 0-6
         self.data['Hour'] = self.data['DateTime'].dt.hour
-        grouped = self.data.groupby(['DayOfWeek', 'Hour']).size().unstack(fill_value=0)
-        result = {}
-        for day in range(1, 8):
-            if day in grouped.index:
-                result[day] = grouped.loc[day].tolist()
-            else:
-                result[day] = [0] * 24
-        return result
+        counts = pd.Series(index=pd.MultiIndex.from_product(
+            [range(1, 8), range(24)], names=['DayOfWeek', 'Hour']), 
+            data=0)
+            
+        temp_counts = self.data.value_counts(['DayOfWeek', 'Hour']).astype("int")
+        counts.update(temp_counts)
+        
+        return {
+            day: [counts.get((day, hour), 0) for hour in range(24)]
+            for day in range(1, 8)
+        }
     
     def is_meaningful_word(self, word: str, language: str) -> bool:
         # Check if word is long enough
@@ -238,56 +233,54 @@ class Chat:
     
     def clean_message(self, message: str) -> str:
         # Remove URLs
-        message = re.sub(self.url_pattern, '', message)
+        message = self.url_pattern.sub('', message)
         # Remove special characters but keep emojis
         message = ''.join(c for c in message if c.isalnum() or c.isspace() or emoji.is_emoji(c))
         # Remove numbers
-        message = re.sub(r'\d+', '', message)
+        message = self.word_pattern.sub('', message)
         return message.strip().lower()
     
     def get_top_10_words(self, df: pd.DataFrame) -> dict:
-        # Combine all messages into a single string for language detection
-        all_messages = ' '.join(df['Message'].astype(str))
-        language = self.detect_language(all_messages)
-        self.export['language'] = language
-        
         # Process each message
         word_counts = Counter()
         
-        for message in df['Message']:
-            # Clean the message
-            cleaned_message = self.clean_message(message)
-            
-            # Split into words and filter
-            words = re.findall(r'\w+', cleaned_message)
-            meaningful_words = [
-                word for word in words 
-                if self.is_meaningful_word(word, language)
-            ]
-            
-            # Update word counts
-            word_counts.update(meaningful_words)
+        chunk_size = 1000
         
-        # Get the top 10 most common meaningful words
-        top_10 = word_counts.most_common(10)
-        return dict(top_10)
+        for i in range(0, len(df), chunk_size):
+            chunk = df.iloc[i:i + chunk_size]
+            chunk_text = ' '.join(chunk['Message'].astype(str))
+            
+            # Clean text in bulk
+            cleaned_text = self.clean_message(chunk_text)
+            words = self.word_pattern.findall(cleaned_text)
+            
+            # Update counter
+            word_counts.update(words)
+        
+        return dict(word_counts.most_common(10))
 
     def analyse(self) -> None:
-        message_count = len(self.data)
-        self.export['total_messages'] = message_count
+        message_count = int(len(self.data))
+        chunk_size = 1000
+        url_count = 0
+        all_messages = []
+        for i in range(0, len(self.data), chunk_size):
+            chunk = self.data.iloc[i:i + chunk_size]
+            chunk_messages = ' '.join(chunk['Message'].astype(str))
+            url_count += len(self.url_pattern.findall(chunk_messages))
+            all_messages.append(chunk_messages)
         
-        # Detect language once for the entire chat
-        all_messages = ' '.join(self.data['Message'].astype(str))
-        self.export['total_urls'] = len(re.findall(self.url_pattern, all_messages))
-        language = self.detect_language(all_messages)
+        all_messages = ' '.join(all_messages)
         
-        persons = self.data.Sender.unique()
-        self.export['people'] = [
-            self.analyse_per_person(person, message_count) 
-            for person in persons
-        ]
-        self.export['weekly_message_counts'] = self.analyse_time()
-        self.export['reading_time'] =self.calculate_reading_time(all_messages)
-        self.export['time'] = self.analyze_average_6hour_intervals()
-        self.export['words'] = self.get_top_10_words(self.data)
+        self.export.update({
+            'total_messages': int(message_count),
+            'total_urls': int(url_count),  # Only use first 1000 chars for language detection
+            'reading_time': self.calculate_reading_time(all_messages),
+            'people': [self.analyse_per_person(person, message_count) 
+                      for person in self.data['Sender'].unique()],
+            'weekly_message_counts': self.analyse_time(),
+            'time': self.analyze_average_6hour_intervals(),
+            'words': self.get_top_10_words(self.data)
+        })
+        
 
