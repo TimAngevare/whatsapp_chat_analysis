@@ -35,7 +35,7 @@ def process_request(event, s3_client, lambda_client):
     response_lambda = lambda_client.invoke(
         FunctionName=lambda_name,
         InvocationType='RequestResponse',  # or 'Event' for async invocation
-        Payload=''
+        Payload='{ "url": "https://whatsapp-chat-infographic.s3.eu-west-2.amazonaws.com/index.html" }'
     )
     print('lambda response: ' + str(response_lambda))
 
@@ -54,7 +54,7 @@ def lambda_handler(event, context):
 
     print(event['headers'])
 
-    if event['headers']['origin'] != 'https://chatalytics.nl':
+    if 'https://chatalytics.nl' not in event['headers']['User-Agent']:
         body = 'Error, rest call not made from website'
         print(body)
         statusCode = 403

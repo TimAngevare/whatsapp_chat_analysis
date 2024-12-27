@@ -6,12 +6,6 @@ from collections import Counter
 import numpy as np
 import emoji
 
-def convert(o):
-        if isinstance(o, (np.int64, np.int32)):
-            return int(o)
-        if isinstance(o, (np.float64, np.float32)):
-            return float(o)
-        raise TypeError(f"Type {type(o)} not serializable") 
 
 class Chat:
     def __init__(self, file_content) -> None:
@@ -177,9 +171,16 @@ class Chat:
         return result
 
     def getExport(self) -> dict:
-        return self.export   
+        return self.export
 
     def getJSON(self) -> str:
+        def convert(o):
+            if isinstance(o, (np.int64, np.int32)):
+                return int(o)
+            if isinstance(o, (np.float64, np.float32)):
+                return float(o)
+            raise TypeError(f"Type {type(o)} not serializable")
+
         return json.dumps(self.export, default=convert)
 
     
@@ -282,5 +283,6 @@ class Chat:
             'time': self.analyze_average_6hour_intervals(),
             'words': self.get_top_10_words(self.data)
         })
+        
         
 
