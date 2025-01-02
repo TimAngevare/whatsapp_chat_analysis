@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Clock } from 'lucide-react'; // Import the icon
 
 const ChatHeatmap = ({ timeData }) => {
-  const margin = { top: 50, right: 50, bottom: 100, left: 120 };
+  const margin = { top: 50, right: 50, bottom: 100, left: 100 };
   const width = 800;
   const height = 400;
 
@@ -33,11 +33,22 @@ const ChatHeatmap = ({ timeData }) => {
     <div className="bg-green-600 rounded-lg p-6 shadow-lg relative" style={{ width: '100%', height: '500px' }}>
       {/* Title and Icon Section */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-center w-full">Average Messages Per Interval</h2>
+        <h2 className="text-2xl font-bold text-center w-full">Average Messages Per 6 Hours</h2>
         <Clock size={32} className="text-indigo-300" />
       </div>
 
       <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
+      <g transform={`translate(${margin.left}, 0)`}>
+          <defs>
+            <linearGradient id="legend-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0" stopColor="rgb(255, 255, 255)" />
+              <stop offset="100" stopColor="rgb(0, 0, 255)" />
+            </linearGradient>
+          </defs>
+          <rect width={200} height={20} fill="url(#legend-gradient)" stroke="#ccc" strokeWidth="1" />
+          <text x={0} y={35} className="text-sm">0</text>
+          <text x={200} y={35} textAnchor="end" className="text-sm">{(maxValue * 100).toFixed(1)}</text>
+        </g>
         <g transform={`translate(${margin.left}, ${margin.top})`}>
           {data.map((d, i) => {
             const x = days.indexOf(d.day) * cellWidth;
@@ -73,7 +84,7 @@ const ChatHeatmap = ({ timeData }) => {
             <text
               key={`x-${day}`}
               x={i * cellWidth + cellWidth / 2}
-              y={height - margin.bottom + 20}
+              y={height - margin.bottom}
               textAnchor="middle"
               className="text-sm font-medium"
             >
@@ -93,18 +104,6 @@ const ChatHeatmap = ({ timeData }) => {
               {interval}
             </text>
           ))}
-        </g>
-
-        <g transform={`translate(${margin.left}, ${height - margin.bottom / 2})`}>
-          <defs>
-            <linearGradient id="legend-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0" stopColor="rgb(255, 255, 255)" />
-              <stop offset="100" stopColor="rgb(0, 0, 255)" />
-            </linearGradient>
-          </defs>
-          <rect width={200} height={20} fill="url(#legend-gradient)" stroke="#ccc" strokeWidth="1" />
-          <text x={0} y={35} className="text-sm">0</text>
-          <text x={200} y={35} textAnchor="end" className="text-sm">{(maxValue * 100).toFixed(1)}</text>
         </g>
       </svg>
     </div>
