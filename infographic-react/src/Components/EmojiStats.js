@@ -1,5 +1,6 @@
 import React from "react";
 import { Smile } from 'lucide-react';
+import Twemoji from 'react-twemoji';
 
 export default function EmojiStats({ people }) {
   return (
@@ -14,22 +15,24 @@ export default function EmojiStats({ people }) {
           <div key={person.name} className="space-y-4">
             <h3 className="font-medium text-lg text-white mb-2">{person.name}</h3>
             <div className="space-y-4">
-              {Object.entries(person.emoji_stats.top_emojis).map(([emoji, count]) => (
-                <div key={emoji} className="flex items-center space-x-4">
-                  <span className="text-3xl">{emoji}</span>
-                  <div className="flex-1 bg-indigo-700 rounded-full h-2">
-                    <div
-                      className="bg-indigo-400 rounded-full h-2"
-                      style={{
-                        width: `${
-                          (count / Math.max(...Object.values(person.emoji_stats.top_emojis))) * 100
-                        }%`,
-                      }}
-                    />
+              <Twemoji options={{ className: 'twemoji' }}>
+                {Object.entries(person.emoji_stats.top_emojis).map(([emoji, count]) => (
+                  <div key={emoji} className="flex items-center space-x-4">
+                    <span className="text-3xl">{emoji}</span>
+                    <div className="flex-1 bg-indigo-700 rounded-full h-2">
+                      <div
+                        className="bg-indigo-400 rounded-full h-2"
+                        style={{
+                          width: `${
+                            (count / Math.max(...Object.values(person.emoji_stats.top_emojis))) * 100
+                          }%`,
+                        }}
+                      />
+                    </div>
+                    <span className="text-sm text-white">{count}</span>
                   </div>
-                  <span className="text-sm text-white">{count}</span>
-                </div>
-              ))}
+                ))}
+              </Twemoji>
             </div>
           </div>
         ))}
