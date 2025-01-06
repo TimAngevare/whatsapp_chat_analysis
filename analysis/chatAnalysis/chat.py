@@ -201,21 +201,24 @@ class Chat:
         person_stats = {'name': person, 'count' : len(person_messages), 'percentage' : round(percentage, 2),'first_message' : {'message' : first['Message'], 'timeStamp' : str(first['DateTime'])}, 'emoji_stats' : person_emoji_stats, 'media_count' : self.count_media_messages_per_person(person), 'average_message_length': avg_message}
         return person_stats
     
-    def analyse_time(self) -> dict:
-        self.data['DayOfWeek'] = self.data['DateTime'].dt.dayofweek + 1  # Adding 1 to make it 1-7 instead of 0-6
-        self.data['Hour'] = self.data['DateTime'].dt.hour
-        counts = pd.Series(index=pd.MultiIndex.from_product(
-            [range(1, 8), range(24)], names=['DayOfWeek', 'Hour']), 
-            data=0)
-            
-        temp_counts = self.data.value_counts(['DayOfWeek', 'Hour']).astype("int")
-        counts.update(temp_counts)
+    def analyze_weekly_message_count(self) -> dict:
+        # Extract the week number and year from DateTime
+        self.data['Year'] = self.data['DateTime'].dt.year
+        self.data['Week'] = self.data['DateTime'].dt.isocalendar().week
         
-        return {
-            day: [counts.get((day, hour), 0) for hour in range(24)]
-            for day in range(1, 8)
+        # Create a multi-index of Year and Week
+        week_counts = self.data.groupby(['Year', 'Week']).size().reset_index(name='MessageCount')
+        
+        # Convert the DataFrame to a dictionary format for easier use
+        weekly_message_count = {
+            f"{year}-{week}": count for (year, week), count in zip(zip(week_counts['Year'], week_counts['Week']), week_counts['MessageCount'])
         }
+
     
+        return weekly_message_count
+
+        
+
     def is_meaningful_word(self, word: str, language: str) -> bool:
         # Check if word is long enough
         if len(word) < 3:
@@ -252,13 +255,14 @@ class Chat:
             chunk_text = ' '.join(chunk['Message'].astype(str))
             
             # Clean text in bulk
-            cleaned_text = self.clean_message(chunk_text)
-            words = self.word_pattern.findall(cleaned_text)
-            
+            #cleaned_text = self.clean_message(chunk_text)
+            words = self.word_pattern.findall(chunk_text)
+            print(words)
             # Update counter
             word_counts.update(words)
-        
-        return dict(word_counts.most_common(10))
+        top_words = dict(word_counts.most_common(10))
+        print(top_words)
+        return dict(top_words)
 
     def analyse(self) -> None:
         message_count = int(len(self.data))
@@ -279,7 +283,7 @@ class Chat:
             'reading_time': self.calculate_reading_time(all_messages),
             'people': [self.analyse_per_person(person, message_count) 
                       for person in self.data['Sender'].unique()],
-            'weekly_message_counts': self.analyse_time(),
+            'weekly_message_counts': self.analyze_weekly_message_count(),
             'time': self.analyze_average_6hour_intervals(),
             'words': self.get_top_10_words(self.data)
         })
