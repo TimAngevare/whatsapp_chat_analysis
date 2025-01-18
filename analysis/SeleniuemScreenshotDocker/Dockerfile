@@ -15,4 +15,5 @@ RUN pip install Pillow==11
 COPY --from=build /opt/chrome-linux64 /opt/chrome
 COPY --from=build /opt/chromedriver-linux64 /opt/
 COPY lambda_function.py ./
+COPY Watermark.png ./
 CMD [ "lambda_function.handler" ]
