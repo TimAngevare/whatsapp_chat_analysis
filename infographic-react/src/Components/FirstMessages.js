@@ -8,7 +8,7 @@ export default function FirstMessages({ people }) {
       <History size={32} className="text-white absolute top-4 right-4" />
 
       <h2 className="text-2xl font-bold text-center w-full mb-4">First Messages</h2>
-      <div className="space-y-4">
+      <div className="space-y-4" style={{height : '40%'}}>
         {people.map(person => (
           <div key={person.name} className="bg-purple-700/50 rounded-lg p-4 w-full flex flex-col h-full">
             <div className="flex flex-col justify-between h-full">
