@@ -62,8 +62,9 @@ def add_watermark(screenshot):
     return base64.b64encode(buffered.getvalue())
 
 def take_screenshot(driver, url, element_id, timeout):
+    
     driver.get(url)
      
-    element = WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.ID, element_id)))
+    WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.ID, element_id)))
     driver.set_window_size(1280, 3057)
     return driver.get_screenshot_as_png()
