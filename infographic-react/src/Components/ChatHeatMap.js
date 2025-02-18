@@ -47,7 +47,7 @@ const ChatHeatmap = ({ timeData }) => {
           </defs>
           <rect width={200} height={20} fill="url(#legend-gradient)" stroke="#ccc" strokeWidth="1" />
           <text x={0} y={35} className="text-sm">0</text>
-          <text x={200} y={35} textAnchor="end" className="text-sm">{(maxValue * 100).toFixed(1)}</text>
+          <text x={200} y={35} textAnchor="end" className="text-sm">{(maxValue).toFixed(1)}</text>
         </g>
         <g transform={`translate(${margin.left}, ${margin.top})`}>
           {data.map((d, i) => {

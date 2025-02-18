@@ -11,7 +11,7 @@ class Chat:
     def __init__(self, file_content) -> None:
         self.file_content = file_content.encode('utf-8') if isinstance(file_content, str) else file_content
         self.data = pd.DataFrame()
-        self.pattern = re.compile(r'\[(\d{2}-\d{2}-\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
+        self.pattern = re.compile(r'\[(\d{2}[/-]\d{2}[/-]\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
         self.url_pattern = re.compile(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
         self.word_pattern = re.compile(r'\w+')
 
@@ -98,34 +98,61 @@ class Chat:
         return round(word_count / 200, 2)
 
     def read(self) -> None:
-        
         with ZipFile(self.file_content, 'r') as zip_file:
-            with zip_file.open('_chat.txt') as chat:
-                chunk_size = 1024 * 1024  # 1MB chunks
-                content = []
-                while True:
-                    chunk = chat.read(chunk_size)
-                    if not chunk:
-                        break
-                    content.append(chunk.decode('utf-8'))
-                content = ''.join(content)
+            txt_files = [f for f in zip_file.namelist() if f.lower().endswith('.txt')]
+    
+            if txt_files:
+                with zip_file.open(txt_files[0]) as chat:
+                    chunk_size = 1024 * 1024  # 1MB chunks
+                    content = []
+                    while True:
+                        chunk = chat.read(chunk_size)
+                        if not chunk:
+                            break
+                        content.append(chunk.decode('utf-8'))
+                    content = ''.join(content)
                 
-                # Process content
-                lines = content.splitlines()[1:]  # Skip first line
-                if ' contact.' in lines[0]:
-                    lines = lines[1:]  # Skip second line if needed
-                content = '\n'.join(lines)
+                    # Process content
+                    lines = content.splitlines()[1:]  # Skip first line
+                    if ' contact.' in lines[0]:
+                        lines = lines[1:]  # Skip second line if needed
+                    content = '\n'.join(lines)
         
-        matches = self.pattern.findall(content)
+                matches = self.pattern.findall(content)
 
-        data = {
-            'DateTime': [f"{date} {time}" for date, time, _, _ in matches],
-            'Sender': [sender for _, _, sender, _ in matches],
-            'Message': [message for _, _, _, message in matches]
-        }
-        
-        self.data = pd.DataFrame(data)
-        self.data['DateTime'] = pd.to_datetime(self.data['DateTime'], format='%d-%m-%Y %H:%M:%S')
+                data = {
+                    'DateTime': [f"{date} {time}" for date, time, _, _ in matches],
+                    'Sender': [sender for _, _, sender, _ in matches],
+                    'Message': [message for _, _, _, message in matches]
+                }
+                
+                self.data = pd.DataFrame(data)
+
+                try:
+                    self.data['DateTime'] = pd.to_datetime(self.data['DateTime'], format='%d/%m/%Y %H:%M:%S')
+                except:
+                    self.data['DateTime'] = pd.to_datetime(self.data['DateTime'], format='%d-%m-%Y %H:%M:%S') 
+
+                # Get the first sender, which is likely the group name
+                potential_group_name = self.data.iloc[0]['Sender']
+                
+                # Remove rows where the sender matches the group name and the message is a known system message
+                system_message_patterns = [
+                    "Messages and calls are end-to-end encrypted",
+                    "created this group",
+                    "added",
+                    "You were added",
+                    "left",
+                    "changed the subject",
+                    "changed this group's icon"
+                ]
+
+                self.data = self.data[
+                    ~((self.data['Sender'] == potential_group_name) & 
+                    (self.data['Message'].str.startswith(tuple(system_message_patterns))))
+                ]
+            else:
+                print('no txt found')
     
     def getData(self) -> pd.DataFrame:
         return self.data
@@ -201,24 +228,21 @@ class Chat:
         person_stats = {'name': person, 'count' : len(person_messages), 'percentage' : round(percentage, 2),'first_message' : {'message' : first['Message'], 'timeStamp' : str(first['DateTime'])}, 'emoji_stats' : person_emoji_stats, 'media_count' : self.count_media_messages_per_person(person), 'average_message_length': avg_message}
         return person_stats
     
-    def analyze_weekly_message_count(self) -> dict:
-        # Extract the week number and year from DateTime
-        self.data['Year'] = self.data['DateTime'].dt.year
-        self.data['Week'] = self.data['DateTime'].dt.isocalendar().week
+    def analyse_time(self) -> dict:
+        self.data['DayOfWeek'] = self.data['DateTime'].dt.dayofweek + 1  # Adding 1 to make it 1-7 instead of 0-6
+        self.data['Hour'] = self.data['DateTime'].dt.hour
+        counts = pd.Series(index=pd.MultiIndex.from_product(
+            [range(1, 8), range(24)], names=['DayOfWeek', 'Hour']), 
+            data=0)
+            
+        temp_counts = self.data.value_counts(['DayOfWeek', 'Hour']).astype("int")
+        counts.update(temp_counts)
         
-        # Create a multi-index of Year and Week
-        week_counts = self.data.groupby(['Year', 'Week']).size().reset_index(name='MessageCount')
-        
-        # Convert the DataFrame to a dictionary format for easier use
-        weekly_message_count = {
-            f"{year}-{week}": count for (year, week), count in zip(zip(week_counts['Year'], week_counts['Week']), week_counts['MessageCount'])
+        return {
+            day: [counts.get((day, hour), 0) for hour in range(24)]
+            for day in range(1, 8)
         }
-
     
-        return weekly_message_count
-
-        
-
     def is_meaningful_word(self, word: str, language: str) -> bool:
         # Check if word is long enough
         if len(word) < 3:
@@ -255,14 +279,13 @@ class Chat:
             chunk_text = ' '.join(chunk['Message'].astype(str))
             
             # Clean text in bulk
-            #cleaned_text = self.clean_message(chunk_text)
-            words = self.word_pattern.findall(chunk_text)
-            print(words)
+            cleaned_text = self.clean_message(chunk_text)
+            filtered_words = [word for word in self.word_pattern.findall(cleaned_text) if self.is_meaningful_word(word, 'nl')]
+            
             # Update counter
-            word_counts.update(words)
-        top_words = dict(word_counts.most_common(10))
-        print(top_words)
-        return dict(top_words)
+            word_counts.update(filtered_words)
+        
+        return dict(word_counts.most_common(10))
 
     def analyse(self) -> None:
         message_count = int(len(self.data))
@@ -283,7 +306,7 @@ class Chat:
             'reading_time': self.calculate_reading_time(all_messages),
             'people': [self.analyse_per_person(person, message_count) 
                       for person in self.data['Sender'].unique()],
-            'weekly_message_counts': self.analyze_weekly_message_count(),
+            'weekly_message_counts': self.analyse_time(),
             'time': self.analyze_average_6hour_intervals(),
             'words': self.get_top_10_words(self.data)
         })
