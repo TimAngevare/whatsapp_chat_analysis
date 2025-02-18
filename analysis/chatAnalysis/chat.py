@@ -11,7 +11,7 @@ class Chat:
     def __init__(self, file_content) -> None:
         self.file_content = file_content.encode('utf-8') if isinstance(file_content, str) else file_content
         self.data = pd.DataFrame()
-        self.pattern = re.compile(r'\[(\d{2}/\d{2}/\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
+        self.pattern = re.compile(r'\[(\d{2}[/-]\d{2}[/-]\d{4}), (\d{2}:\d{2}:\d{2})\] ([^:]+): (.*)')
         self.url_pattern = re.compile(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
         self.word_pattern = re.compile(r'\w+')
 
@@ -128,7 +128,10 @@ class Chat:
                 
                 self.data = pd.DataFrame(data)
 
-                self.data['DateTime'] = pd.to_datetime(self.data['DateTime'], format='%d/%m/%Y %H:%M:%S')
+                try:
+                    self.data['DateTime'] = pd.to_datetime(self.data['DateTime'], format='%d/%m/%Y %H:%M:%S')
+                except:
+                    self.data['DateTime'] = pd.to_datetime(self.data['DateTime'], format='%d-%m-%Y %H:%M:%S') 
 
                 # Get the first sender, which is likely the group name
                 potential_group_name = self.data.iloc[0]['Sender']
