@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-//import personalData from './data.json';
 import ChatHeatmap from './Components/ChatHeatMap';
 import AverageLengthChart from './Components/AverageLengthChart';
 import FirstMessages from './Components/FirstMessages';
@@ -71,7 +70,7 @@ export default function ChatAnalysisDashboard() {
           <AverageLengthChart averageLengthData={data.people} />
           <FirstMessages people={data.people} />
         </div>
-        <WeeklyMessageChart weeklyData={data.weekly_message_counts} />
+        {/* <WeeklyMessageChart weeklyData={data.weekly_message_counts} /> */}
       </div>
     </div>
   );
