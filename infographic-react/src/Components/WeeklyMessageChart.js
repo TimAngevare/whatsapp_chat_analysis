@@ -4,6 +4,7 @@ import { Activity } from 'lucide-react';
 
 // Import necessary Chart.js components
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
+import { color } from 'chart.js/helpers';
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
@@ -46,11 +47,22 @@ export default function WeeklyMessageChart({ weeklyData }) {
     scales: {
       y: {
         beginAtZero: true,
+        ticks:{
+          color:'#FFFFFF'
+        }
       },
       x: {
         ticks: {
           maxRotation: 45,
           autoSkip: true,
+          color: '#FFFFFF'
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        labels: {
+          color: '#FFFFFF', // Set the legend label color to white
         },
       },
     },
@@ -68,10 +80,10 @@ export default function WeeklyMessageChart({ weeklyData }) {
 
   return (
     <div className="bg-purple-600 rounded-lg p-6 shadow-lg relative">
-      <h3 className="text-2xl font-bold text-white">Messages Per Week</h3>
+      <h3 className="text-2xl font-bold text-white" >Messages Per Week</h3>
       <Activity size={32} className="text-purple-300 absolute top-4 right-4" />
       {dataset.length > 0 ? (
-        <Line ref={chartRef} data={chartData} options={options} />
+        <Line ref={chartRef} data={chartData} options={options} id="weeklyMessageChart" />
       ) : (
         <div className="text-white">No messages to display yet.</div>
       )}
