@@ -2,6 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Activity } from 'lucide-react';
 
+// Import necessary Chart.js components
+import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
+
 export default function WeeklyMessageChart({ weeklyData }) {
   const chartRef = useRef(null);
 
@@ -12,21 +18,13 @@ export default function WeeklyMessageChart({ weeklyData }) {
   // If weeklyData exists, proceed with populating labels and dataset
   if (weeklyData) {
     const allWeeks = Object.keys(weeklyData);
-    const firstWeek = allWeeks.reduce((a, b) => (a < b ? a : b)); // Get the earliest week
-    const lastWeek = allWeeks.reduce((a, b) => (a > b ? a : b));  // Get the latest week
+    const sortedWeeks = allWeeks.sort(); // Sort the weeks for correct chronological order
 
-    // Generate the weeks from first to last, and fill missing weeks with 0
-    let currentWeek = firstWeek;
-    while (currentWeek <= lastWeek) {
-      labels.push(currentWeek); // Add the week as label
-      dataset.push(weeklyData[currentWeek] || 0); // Add 0 if week is missing
-
-      // Get the next week (handle week numbering)
-      const [year, week] = currentWeek.split('-').map(Number);
-      const nextWeekDate = new Date(year, 0, (week - 1) * 7); // Start of the current week
-      nextWeekDate.setDate(nextWeekDate.getDate() + 7); // Move to the next week
-      currentWeek = `${nextWeekDate.getFullYear()}-${String(nextWeekDate.getWeek()).padStart(2, '0')}`;
-    }
+    // Generate the labels and dataset for chart
+    sortedWeeks.forEach((week) => {
+      labels.push(week); // Add the week as label
+      dataset.push(weeklyData[week]); // Add the count for the respective week
+    });
   }
 
   const chartData = {
@@ -58,6 +56,15 @@ export default function WeeklyMessageChart({ weeklyData }) {
     },
   };
 
+  // Cleanup old chart instance when data changes
+  useEffect(() => {
+    if (chartRef.current) {
+      const chartInstance = chartRef.current.chartInstance;
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+    }
+  }, [weeklyData]);
 
   return (
     <div className="bg-purple-600 rounded-lg p-6 shadow-lg relative">

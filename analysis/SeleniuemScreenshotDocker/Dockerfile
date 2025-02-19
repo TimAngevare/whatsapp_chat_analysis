@@ -16,4 +16,7 @@ COPY --from=build /opt/chrome-linux64 /opt/chrome
 COPY --from=build /opt/chromedriver-linux64 /opt/
 COPY lambda_function.py ./
 COPY Watermark.png ./
+RUN dnf install -y fontconfig && dnf clean all
+COPY AppleColorEmoji.ttf /usr/share/fonts/apple/
+RUN fc-cache -f -v
 CMD [ "lambda_function.handler" ]

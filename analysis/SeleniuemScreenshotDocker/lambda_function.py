@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from io import BytesIO
 import base64
 from PIL import Image
+from time import sleep
 
 def handler(event, context=None):
     url = event['url']
@@ -32,11 +33,10 @@ def handler(event, context=None):
     options.add_argument(f"--user-data-dir={mkdtemp()}")
     options.add_argument(f"--data-path={mkdtemp()}")
     options.add_argument(f"--disk-cache-dir={mkdtemp()}")
-    options.add_argument("--window-size=1280x3057")
     options.add_argument("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36")
 
     driver = webdriver.Chrome(options=options, service=service)
-    screenshot = take_screenshot(driver, url, "title", 10)
+    screenshot = take_screenshot(driver, url, "weeklyMessageChart", 10)
     driver.quit()
     if watermark:
         return add_watermark(screenshot)
@@ -66,5 +66,7 @@ def take_screenshot(driver, url, element_id, timeout):
     driver.get(url)
      
     WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.ID, element_id)))
-    driver.set_window_size(1280, 3057)
+    sleep(1)
+    html = driver.find_element(By.XPATH,'/html')
+    driver.set_window_size(1100, html.size['height'])
     return driver.get_screenshot_as_png()
