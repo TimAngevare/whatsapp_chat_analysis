@@ -5,9 +5,16 @@ from zipfile import ZipFile
 from collections import Counter
 import numpy as np
 import emoji
-
+import concurrent.futures
 
 class Chat:
+    def detect_language(self, text: str) -> str:
+        try:
+            return detect(text)  # Detect language (returns a language code like 'en', 'nl', etc.)
+        except Exception as e:
+            print(f"Error detecting language: {e}")
+            return 'nl'  # Default to English if detection fails
+
     def __init__(self, file_content) -> None:
         self.file_content = file_content.encode('utf-8') if isinstance(file_content, str) else file_content
         self.data = pd.DataFrame()
@@ -64,7 +71,7 @@ class Chat:
                 'zij', 'zich', 'als', 'werd', 'nog', 'waren', 'eens', 'tijd',
                 'dit', 'door', 'men', 'dus', 'iets', 'groot', 'kunnen', 'heel',
                 'vaak', 'goed', 'even', 'toch', 'snel', 'laat', 'doen', 'lekker',
-                'haha', 'hoor', 'nou'
+                'haha', 'hoor', 'nou', 'ben'
             }
         }
     
@@ -229,19 +236,20 @@ class Chat:
         return person_stats
     
     def analyse_time(self) -> dict:
-        self.data['DayOfWeek'] = self.data['DateTime'].dt.dayofweek + 1  # Adding 1 to make it 1-7 instead of 0-6
-        self.data['Hour'] = self.data['DateTime'].dt.hour
-        counts = pd.Series(index=pd.MultiIndex.from_product(
-            [range(1, 8), range(24)], names=['DayOfWeek', 'Hour']), 
-            data=0)
-            
-        temp_counts = self.data.value_counts(['DayOfWeek', 'Hour']).astype("int")
-        counts.update(temp_counts)
+        # Extract the week number and year from DateTime
+        self.data['Year'] = self.data['DateTime'].dt.year
+        self.data['Week'] = self.data['DateTime'].dt.isocalendar().week
         
-        return {
-            day: [counts.get((day, hour), 0) for hour in range(24)]
-            for day in range(1, 8)
+        # Create a multi-index of Year and Week
+        week_counts = self.data.groupby(['Year', 'Week']).size().reset_index(name='MessageCount')
+        
+        # Convert the DataFrame to a dictionary format for easier use
+        weekly_message_count = {
+            f"{year}-{week}": count for (year, week), count in zip(zip(week_counts['Year'], week_counts['Week']), week_counts['MessageCount'])
         }
+
+    
+        return weekly_message_count
     
     def is_meaningful_word(self, word: str, language: str) -> bool:
         # Check if word is long enough
@@ -262,30 +270,44 @@ class Chat:
     def clean_message(self, message: str) -> str:
         # Remove URLs
         message = self.url_pattern.sub('', message)
-        # Remove special characters but keep emojis
-        message = ''.join(c for c in message if c.isalnum() or c.isspace() or emoji.is_emoji(c))
-        # Remove numbers
-        message = self.word_pattern.sub('', message)
+        # Remove emojis
+        message = ''.join(c for c in message if not emoji.is_emoji(c))
+        # Remove special characters but keep spaces and alphanumeric characters
+        message = ''.join(c for c in message if c.isalnum() or c.isspace())
         return message.strip().lower()
+
+    def get_top_5_words(self, df: pd.DataFrame) -> dict:
     
-    def get_top_10_words(self, df: pd.DataFrame) -> dict:
-        # Process each message
+        # Function to process a chunk of data
+        def process_chunk(chunk: pd.DataFrame) -> Counter:
+            word_counts = Counter()
+            for message in chunk['Message']:
+            
+                cleaned_message = self.clean_message(message)
+                words = cleaned_message.split()
+                language = self.detect_language(message)
+                filtered_words = [word for word in words if self.is_meaningful_word(word, language)]
+                word_counts.update(filtered_words)
+            return word_counts
+
+        # Split DataFrame into chunks
+        chunk_size = 1000  # You can adjust the chunk size based on your dataset size
+        chunks = [df.iloc[i:i + chunk_size] for i in range(0, len(df), chunk_size)]
+        
+        # Use ThreadPoolExecutor to process chunks in parallel
         word_counts = Counter()
-        
-        chunk_size = 1000
-        
-        for i in range(0, len(df), chunk_size):
-            chunk = df.iloc[i:i + chunk_size]
-            chunk_text = ' '.join(chunk['Message'].astype(str))
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Process each chunk concurrently
+            results = executor.map(process_chunk, chunks)
             
-            # Clean text in bulk
-            cleaned_text = self.clean_message(chunk_text)
-            filtered_words = [word for word in self.word_pattern.findall(cleaned_text) if self.is_meaningful_word(word, 'nl')]
-            
-            # Update counter
-            word_counts.update(filtered_words)
+            # Combine results from all threads
+            for result in results:
+                word_counts.update(result)
         
-        return dict(word_counts.most_common(10))
+        # Get top 10 words
+        top_5_words = dict(word_counts.most_common(5))
+        
+        return top_5_words
 
     def analyse(self) -> None:
         message_count = int(len(self.data))
@@ -308,7 +330,7 @@ class Chat:
                       for person in self.data['Sender'].unique()],
             'weekly_message_counts': self.analyse_time(),
             'time': self.analyze_average_6hour_intervals(),
-            'words': self.get_top_10_words(self.data)
+            'words': self.get_top_5_words(self.data)
         })
         
         
