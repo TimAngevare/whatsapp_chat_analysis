@@ -19,6 +19,8 @@ export default function ChatAnalysisDashboard() {
         const response = await fetch('/data.json');  // Replace with your actual API URL
         const result = await response.json();
         setData(result);
+        setTheme();
+
       } catch (error) {
         console.error('Error fetching chat data:', error);
       }
@@ -27,6 +29,16 @@ export default function ChatAnalysisDashboard() {
     fetchData();
   }, []);
 
+  const setTheme = () => {
+    var theme = data.theme
+    if (theme){
+      var r = document.querySelector(':root');
+      r.style.setProperty('--primary-color', theme.primary);
+      r.style.setProperty('--secondary-color', theme.secondary);
+      r.style.setProperty('--tertiary-color', theme.tertiary);
+      r.style.setProperty('--fourth-color', theme.fourth);
+    }
+  }
   if (!data) {
     return <div>Loading...</div>;
   }
