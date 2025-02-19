@@ -1,3 +1,10 @@
+:root{
+  --primary-color: rgb(147 51 234);
+  --secondary-color: rgb(79 70 229);
+  --tertiary-color: rgb(22 163 74);
+  --fourth-color: rgb(219 39 119);
+}
+
 .App {
   text-align: center;
 }
@@ -5,6 +12,26 @@
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.bg-gradient {
+  background-image: linear-gradient(to right, var(--primary-color),var(--secondary-color));
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-tertiary {
+  background-color: var(--tertiary-color);
+}
+
+.bg-fourth {
+  background-color: var(--fourth-color);
 }
 
 @media (prefers-reduced-motion: no-preference) {

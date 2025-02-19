@@ -30,7 +30,7 @@ const ChatHeatmap = ({ timeData }) => {
   const formatValue = (value) => value.toFixed(1);
 
   return (
-    <div className="bg-green-600 rounded-lg p-6 shadow-lg relative" style={{ width: '100%', height: '500px' }}>
+    <div className="bg-tertiary rounded-lg p-6 shadow-lg relative" style={{ width: '100%', height: '500px' }}>
       {/* Title and Icon Section */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-center w-full">Average Messages Per 6 Hours</h2>

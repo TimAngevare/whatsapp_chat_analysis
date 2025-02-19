@@ -8,9 +8,9 @@ export default function MessageCountLabel ({ person, percentage, count }) {
 
             {/* Stat bar and count */}
             <div className="flex items-center space-x-2 w-3/4">
-                <div className="w-full bg-pink-700 rounded-full h-8">
+                <div className="w-full rounded-full h-8">
                     <div
-                        className="bg-pink-400 rounded-full h-8"
+                        className="rounded-full h-8"
                         style={{ width: `${percentage * 100}%` }}
                     />
                 </div>

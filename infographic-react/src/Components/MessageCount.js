@@ -4,8 +4,8 @@ import { MessageCircle } from 'lucide-react';
 
 export default function MessageCount ({ people }) {
     return (
-        <div className="bg-pink-600 rounded-lg p-6 shadow-lg relative min-h-[300px] flex flex-col">
-            <MessageCircle size={32} className="text-pink-300 absolute top-4 right-4" />
+        <div className="bg-fourth rounded-lg p-6 shadow-lg relative min-h-[300px] flex flex-col">
+            <MessageCircle size={32} className=" absolute top-4 right-4" />
 
             {/* Title at the top */}
             <h2 className="text-2xl font-bold mb-4">Message Count</h2>

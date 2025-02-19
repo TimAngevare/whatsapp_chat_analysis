@@ -15,7 +15,7 @@ export default function TopWords ({ wordData }) {
   };
 
   return (
-    <div className="bg-blue-600 rounded-lg p-6 shadow-lg relative">
+    <div className="bg-secondary rounded-lg p-6 shadow-lg relative">
       {/* Word icon at the top right */}
       <FileText size={32} className="text-white absolute top-4 right-4" />
 

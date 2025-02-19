@@ -72,11 +72,11 @@ const AverageLengthChart = ({ averageLengthData }) => {
   };
 
   return (
-    <div className="bg-indigo-600 rounded-lg p-6 shadow-lg">
+    <div className="bg-secondary rounded-lg p-6 shadow-lg">
       <div className="flex items-center justify-between mb-4">
         {/* Title centered */}
         <h2 className="text-2xl font-bold text-white w-full text-center">Average Message Length</h2>
-        <CaseUpperIcon className="text-indigo-300" size={32} />
+        <CaseUpperIcon className="" size={32} />
       </div>
 
       <Chart

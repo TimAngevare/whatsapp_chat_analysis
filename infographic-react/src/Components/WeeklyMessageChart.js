@@ -79,7 +79,7 @@ export default function WeeklyMessageChart({ weeklyData }) {
   }, [weeklyData]);
 
   return (
-    <div className="bg-purple-600 rounded-lg p-6 shadow-lg relative">
+    <div className="bg-primary rounded-lg p-6 shadow-lg relative">
       <h3 className="text-2xl font-bold text-white" >Messages Per Week</h3>
       <Activity size={32} className="text-purple-300 absolute top-4 right-4" />
       {dataset.length > 0 ? (
