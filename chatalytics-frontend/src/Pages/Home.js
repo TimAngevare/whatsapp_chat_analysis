@@ -1,5 +1,6 @@
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
+import { Link } from "react-router-dom";
 
 function Home() {
     return (
@@ -27,14 +28,14 @@ function Home() {
                         class="wp-block-buttons wp-container-content-1 is-content-justification-center is-layout-flex wp-container-core-buttons-is-layout-2 wp-block-buttons-is-layout-flex">
                         <div
                             class="wp-block-button has-custom-font-size is-style-outline has-superbfont-small-font-size is-style-outline--2">
-                            <a class="wp-block-button__link has-mono-2-color has-text-color has-link-color wp-element-button"
-                                href="/contact/">About Us</a></div>
+                            <Link className="wp-block-button__link has-mono-2-color has-text-color has-link-color wp-element-button"
+                                to="/contact">About Us</Link></div>
 
 
 
-                        <div class="wp-block-button has-custom-font-size is-style-fill has-superbfont-small-font-size"><a
-                            class="wp-block-button__link has-contrast-light-color has-text-color has-link-color wp-element-button"
-                            href="/get-started/">Get started!</a></div>
+                        <div class="wp-block-button has-custom-font-size is-style-fill has-superbfont-small-font-size">
+                            <Link className="wp-block-button__link has-contrast-light-color has-text-color has-link-color wp-element-button"
+                            to="/get-started">Get started!</Link></div>
                     </div>
                 </div>
 

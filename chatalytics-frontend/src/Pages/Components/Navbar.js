@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
 
 function Navbar() {
-    return (<header class="wp-block-template-part">
+    return (
+    <header class="wp-block-template-part">
         <div class="wp-block-group alignfull superbthemes-navigation-three has-global-padding is-layout-constrained wp-container-core-group-is-layout-2 wp-block-group-is-layout-constrained"
             style={{borderStyle:'none',borderWidth:0,paddingTop:20,paddingBottom:10}}>
             <div class="wp-block-group alignwide has-mono-4-background-color has-background has-global-padding is-layout-constrained wp-container-core-group-is-layout-1 wp-block-group-is-layout-constrained"
@@ -57,14 +59,14 @@ function Navbar() {
                                                 class="wp-block-navigation__container has-text-color has-mono-1-color has-superbfont-xsmall-font-size is-responsive items-justified-center wp-block-navigation has-superbfont-xsmall-font-size">
                                                 <li
                                                     class="has-text-color has-mono-1-color has-superbfont-xsmall-font-size wp-block-navigation-item current-menu-item wp-block-home-link">
-                                                    <a class="wp-block-home-link__content wp-block-navigation-item__content"
-                                                        href="/" rel="home" aria-current="page">Home</a></li>
+                                                    <Link className="wp-block-home-link__content wp-block-navigation-item__content"
+                                                        to="/" rel="home" aria-current="page">Home</Link></li>
                                                 <li
                                                     class="has-superbfont-xsmall-font-size wp-block-navigation-item wp-block-navigation-link">
-                                                    <a class="wp-block-navigation-item__content"
-                                                        href="https://chatalytics.nl/contact/"><span
+                                                    <Link className="wp-block-navigation-item__content"
+                                                        to="/contact"><span
                                                             class="wp-block-navigation-item__label">About
-                                                            Us</span></a></li>
+                                                            Us</span></Link></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -81,8 +83,8 @@ function Navbar() {
                             class="wp-block-buttons is-content-justification-right is-layout-flex wp-container-core-buttons-is-layout-1 wp-block-buttons-is-layout-flex">
                             <div
                                 class="wp-block-button has-custom-font-size is-style-fill has-superbfont-xxsmall-font-size">
-                                <a class="wp-block-button__link wp-element-button" href="/get-started/">Get
-                                    started!</a></div>
+                                <Link className="wp-block-button__link wp-element-button" to="/get-started">Get
+                                    started!</Link></div>
                         </div>
                     </div>
                 </div>

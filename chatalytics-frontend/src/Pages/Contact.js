@@ -63,7 +63,7 @@ function Contact() {
 
 
 
-                                <h3 class="wp-block-heading has-text-align-center has-contrast-color has-text-color has-superbfont-xsmall-font-size" style={{fontStyle:normal,fontWeight:400}}>Student Business information Technology</h3>
+                                <h3 class="wp-block-heading has-text-align-center has-contrast-color has-text-color has-superbfont-xsmall-font-size" style={{fontStyle:'normal',fontWeight:400}}>Student Business information Technology</h3>
 
 
 

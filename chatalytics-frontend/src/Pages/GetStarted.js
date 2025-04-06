@@ -1,7 +1,11 @@
 import Footer from "./Components/Footer";
 import Navbar from "./Components/Navbar";
+import React, { useRef } from "react";
+import reCAPTCHA from "react-google-recaptcha"
 
 function GetStarted() {
+    const captchaRef = useRef(null)
+
     const themes = {
         "default": ["#9333ea", "#4f46e5", "#16a34a", "#db2777"],
         "light": ["#9333ea", "#4f46e5", "#16a34a", "#db2777"],
@@ -39,7 +43,7 @@ function GetStarted() {
 
         var radioButtons = document.getElementsByName('theme');
         var selectedTheme = ""
-        for (i = 0; i < radioButtons.length; i++) {
+        for (var i = 0; i < radioButtons.length; i++) {
             if (radioButtons[i].checked) {
                 selectedTheme = radioButtons[i].value;
             }
@@ -48,14 +52,14 @@ function GetStarted() {
         const loader = document.getElementById('loader');
         const button = document.getElementById('submit-button');
         const fileInput = document.getElementById('zip-file');
-        const recaptchaResponse = grecaptcha.getResponse();
+        const token = captchaRef.current.getValue();
 
         if (fileInput.files.length === 0) {
             alert("Please select a zip file.");
             return;
         }
 
-        if (recaptchaResponse === '') {
+        if (token === '') {
             alert("Are you sure you are a human? Please complete the captcha in order to prove it.");
             return;
         }
@@ -74,7 +78,7 @@ function GetStarted() {
 
         const formData = new FormData();
         formData.append('zip-file', file);
-        formData.append('g-recaptcha-response', recaptchaResponse);
+        formData.append('g-recaptcha-response', token);
 
         loader.style.display = 'flex';
         button.disabled = true;
@@ -214,7 +218,7 @@ function GetStarted() {
                                                     <input type="radio" id="light" name="theme" value="Light" />
                                                     <label for="light">Light</label><br />
                                                 </div>
-                                                <div class="g-recaptcha" data-sitekey="6Ld1zZ4qAAAAABNJ1o9O585A76Nk7IhWW-H0lgkW"></div>
+                                                <reCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY} ref={captchaRef}/>
                                                 <button id="submit-button" type="submit">Upload and Display Image</button>
                                             </form>
 
