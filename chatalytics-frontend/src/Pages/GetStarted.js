@@ -1,16 +1,10 @@
 import Footer from "./Components/Footer";
 import Navbar from "./Components/Navbar";
 import React, { useRef } from "react";
-import reCAPTCHA from "react-google-recaptcha"
+import reCAPTCHA from "react-google-recaptcha";
 
 function GetStarted() {
     const captchaRef = useRef(null)
-
-    const themes = {
-        "default": ["#9333ea", "#4f46e5", "#16a34a", "#db2777"],
-        "light": ["#9333ea", "#4f46e5", "#16a34a", "#db2777"],
-        "jungle": ["#9333ea", "#4f46e5", "#16a34a", "#db2777"]
-    }
 
     // const style = document.createElement('style');
     // style.appendChild(document.createTextNode('#wpforms-133-field_3-container {position: absolute !important; overflow: hidden !important; display: inline !important; height: 1px !important; width: 1px !important; z-index: -1000 !important; padding: 0 !important; } #wpforms-133-field_3-container input {visibility: hidden; } #wpforms-conversational-form-page #wpforms-133-field_3-container label {counter - increment: none; }'));
@@ -26,167 +20,21 @@ function GetStarted() {
         showFileName(this);
     });
 
-    function showFileName(input) {
-        const fileNameDiv = document.getElementById('selectedFile');
-        const submitButton = document.getElementById('submit-button');
-        if (input.files && input.files[0]) {
-            fileNameDiv.style.display = 'block';
-            fileNameDiv.textContent = 'Selected file: ' + input.files[0].name;
-            submitButton.disabled = false;
-        } else {
-            fileNameDiv.style.display = 'none';
-            submitButton.disabled = true;
-        }
-    };
-
-    async function handleSubmit(event) {
-        event.preventDefault();
-
-        var radioButtons = document.getElementsByName('theme');
-        var selectedTheme = ""
-        for (var i = 0; i < radioButtons.length; i++) {
-            if (radioButtons[i].checked) {
-                selectedTheme = radioButtons[i].value;
-            }
-        }
-        console.log(selectedTheme);
-        const loader = document.getElementById('loader');
-        const button = document.getElementById('submit-button');
-        const fileInput = document.getElementById('zip-file');
-        const token = captchaRef.current.getValue();
-
-        if (fileInput.files.length === 0) {
-            alert("Please select a zip file.");
-            return;
-        }
-
-        if (token === '') {
-            alert("Are you sure you are a human? Please complete the captcha in order to prove it.");
-            return;
-        }
-
-        const file = fileInput.files[0];
-        if (file.type !== 'application/zip' && file.name.split('.').pop().toLowerCase() !== 'zip') {
-            alert("Only .zip files are allowed.");
-            return;
-        }
-
-        const maxFileSize = 10 * 1024 * 1024; // 10 MB
-        if (file.size > maxFileSize) {
-            alert("File size exceeds 10 MB.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('zip-file', file);
-        formData.append('g-recaptcha-response', token);
-
-        loader.style.display = 'flex';
-        button.disabled = true;
-
-        try {
-            const response = await fetch('https://chatalytics.nl/wp-json/myplugin/v1/upload', {
-                method: 'POST',
-                body: formData,
-                headers: { 'Primary': themes[selectedTheme][0], 'Secondary': themes[selectedTheme][1], 'Tertiary': themes[selectedTheme][2], 'Fourth': themes[selectedTheme][3] }
-            });
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            if (data && data.image) {
-                const imageBase64 = data.image;
-                const link = document.createElement('a');
-                link.href = `data:image/png;base64,${imageBase64}`;
-                link.download = 'image.png';
-                link.click();
-
-                const modal = document.getElementById('form-modal');
-                modal.style.display = 'flex'; // Show the modal
-            } else {
-                console.error("Image key not found in the response.", data);
-                alert("Failed to retrieve image.");
-            }
-        } catch (error) {
-            console.error("Upload failed:", error);
-            alert("An error occurred during the upload.");
-        } finally {
-            loader.style.display = 'none';
-            button.disabled = false;
-        }
-    }
-
-    document.getElementById('close-modal').addEventListener('click', function () {
-        document.getElementById('form-modal').style.display = 'none';
-    });
     document.getElementById('uploadForm').addEventListener('submit', handleSubmit);
     document.getElementById('uploadForm').addEventListener('submit', handleSubmit);
 
     return (
         <div class="wp-site-blocks">
             <Navbar />
+            <FeedbackModel isOpen={false} onClose={() => {
+                const modal = document.getElementById('form-modal');
+                modal.style.display = 'none';}}/>
             <main class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-26 wp-block-group-is-layout-constrained" style={{marginTop:'var(--wp--preset--spacing--50)',paddingTop:'var(--wp--preset--spacing--superbspacing-small)',paddingRight:'var(--wp--preset--spacing--superbspacing-small)',paddingBottom:'var(--wp--preset--spacing--superbspacing-small)',paddingLeft:'var(--wp--preset--spacing--superbspacing-small)'}}>
-
 
                 <div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-23 wp-block-group-is-layout-constrained">
                     <h1 style={{fontStyle:'normal',fontWeight:600, marginBottom:'var(--wp--preset--spacing--40)'}} class="wp-block-post-title has-superbfont-xlarge-font-size">Insights within a minute!</h1>
 
                     <div class="entry-content alignwide wp-elements-28c78b71729f9208f2794ac9c056b66e wp-block-post-content has-text-color has-mono-2-color has-superbfont-xsmall-font-size has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained">
-                        <div id="form-modal" class="modal">
-                            <div class="modal-content">
-                                <span id="close-modal" class="close-button">&times;</span>
-                                <div id="modal-form-content">
-                                    <div class="wpforms-container wpforms-container-full wpforms-render-modern" id="wpforms-133"><form id="wpforms-form-133" class="wpforms-validate wpforms-form wpforms-ajax-form" data-formid="133" method="post" enctype="multipart/form-data" action="/get-started/?simply_static_page=66" data-token="514b7afed9309827a806519e0512ecbb" data-token-time="1743766224">
-                                        <noscript class="wpforms-error-noscript">Please enable JavaScript in your browser to complete this form.</noscript>
-                                        <div class="wpforms-hidden" id="wpforms-error-noscript">Please enable JavaScript in your browser to complete this form.</div>
-                                        <div class="wpforms-field-container">
-                                            <div id="wpforms-133-field_3-container" class="wpforms-field wpforms-field-text" data-field-type="text" data-field-id="3">
-                                                <label class="wpforms-field-label" for="wpforms-133-field_3">any Do feedback</label>
-                                                <input type="text" id="wpforms-133-field_3" class="wpforms-field-medium" name="wpforms[fields][3]" />
-                                            </div>
-                                            <div id="wpforms-133-field_1-container" class="wpforms-field wpforms-field-text" data-field-id="1">
-                                                <label class="wpforms-field-label" for="wpforms-133-field_1">Do you have any feedback on our product</label><input type="text" id="wpforms-133-field_1" class="wpforms-field-medium" name="wpforms[fields][1]" aria-errormessage="wpforms-133-field_1-error" />
-                                            </div>
-                                            <div id="wpforms-133-field_2-container" class="wpforms-field wpforms-field-radio wpforms-list-inline" data-field-id="2">
-                                                <fieldset>
-                                                    <legend class="wpforms-field-label">Grade our product <span class="wpforms-required-label" aria-hidden="true">*</span>
-                                                    </legend>
-                                                    <ul id="wpforms-133-field_2" class="wpforms-field-required">
-                                                        <li class="choice-1 depth-1">
-                                                            <input type="radio" id="wpforms-133-field_2_1" name="wpforms[fields][2]" value="1" aria-errormessage="wpforms-133-field_2_1-error" required /><label class="wpforms-field-label-inline" for="wpforms-133-field_2_1">1</label>
-                                                        </li>
-                                                        <li class="choice-4 depth-1">
-                                                            <input type="radio" id="wpforms-133-field_2_4" name="wpforms[fields][2]" value="2" aria-errormessage="wpforms-133-field_2_4-error" required /><label class="wpforms-field-label-inline" for="wpforms-133-field_2_4">2</label>
-                                                        </li>
-                                                        <li class="choice-2 depth-1">
-                                                            <input type="radio" id="wpforms-133-field_2_2" name="wpforms[fields][2]" value="3" aria-errormessage="wpforms-133-field_2_2-error" required /><label class="wpforms-field-label-inline" for="wpforms-133-field_2_2">3</label>
-                                                        </li>
-                                                        <li class="choice-3 depth-1">
-                                                            <input type="radio" id="wpforms-133-field_2_3" name="wpforms[fields][2]" value="4" aria-errormessage="wpforms-133-field_2_3-error" required /><label class="wpforms-field-label-inline" for="wpforms-133-field_2_3">4</label>
-                                                        </li>
-                                                        <li class="choice-5 depth-1">
-                                                            <input type="radio" id="wpforms-133-field_2_5" name="wpforms[fields][2]" value="5" aria-errormessage="wpforms-133-field_2_5-error" required /><label class="wpforms-field-label-inline" for="wpforms-133-field_2_5">5</label>
-                                                        </li>
-                                                    </ul>
-                                                </fieldset>
-                                            </div>
-                                        </div>
-                                        <div class="wpforms-submit-container">
-                                            <input type="hidden" name="wpforms[id]" value="133" />
-                                            <input type="hidden" name="page_title" value="Insights within a minute!" />
-                                            <input type="hidden" name="page_url" value="/get-started/?simply_static_page=66" />
-                                            <input type="hidden" name="url_referer" value="" />
-                                            <input type="hidden" name="page_id" value="37" />
-                                            <input type="hidden" name="wpforms[post_id]" value="37" />
-                                            <button type="submit" name="wpforms[submit]" id="wpforms-submit-133" class="wpforms-submit" data-alt-text="Sending..." data-submit-text="Submit" aria-live="assertive" value="wpforms-submit">Submit</button>
-                                            <img decoding="async" src="/wp-content/plugins/wpforms-lite/assets/images/submit-spin.svg" class="wpforms-submit-spinner" style={{display: 'none'}} width="26" height="26" alt="Loading" />
-                                        </div>
-                                    </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="wp-block-group alignfull is-layout-flow wp-block-group-is-layout-flow">
                             <div class="wp-block-group alignfull superbthemes-navigation-004 is-layout-flow wp-block-group-is-layout-flow" style={{marginTop:0,marginBottom:0,paddingTop:0,paddingBottom:0}}>
                                 <div class="wp-block-cover" style={{marginTop:0,marginBottom:0,paddingTop:'var(--wp--preset--spacing--superbspacing-xxlarge)',paddingRight:0,paddingBottom:'var(--wp--preset--spacing--superbspacing-xxlarge)',paddingLeft:0,minHeight:100,aspectRatio:'unset'}}>
