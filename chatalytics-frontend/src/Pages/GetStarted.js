@@ -12,13 +12,14 @@ function GetStarted() {
         "jungle": ["#9333ea", "#4f46e5", "#16a34a", "#db2777"]
     }
 
-    const style = document.createElement('style');
-    style.appendChild(document.createTextNode('#wpforms-133-field_3-container {position: absolute !important; overflow: hidden !important; display: inline !important; height: 1px !important; width: 1px !important; z-index: -1000 !important; padding: 0 !important; } #wpforms-133-field_3-container input {visibility: hidden; } #wpforms-conversational-form-page #wpforms-133-field_3-container label {counter - increment: none; }'));
-    document.head.appendChild(style);
-    document.currentScript?.remove();
+    // const style = document.createElement('style');
+    // style.appendChild(document.createTextNode('#wpforms-133-field_3-container {position: absolute !important; overflow: hidden !important; display: inline !important; height: 1px !important; width: 1px !important; z-index: -1000 !important; padding: 0 !important; } #wpforms-133-field_3-container input {visibility: hidden; } #wpforms-conversational-form-page #wpforms-133-field_3-container label {counter - increment: none; }'));
+    // document.head.appendChild(style);
+    // document.currentScript?.remove();
 
     // Ensure modal is hidden on page load
     const modal = document.getElementById('form-modal');
+    console.log(modal);
     modal.style.display = 'none';
     const fileInput = document.getElementById('zip-file');
     fileInput.addEventListener('change', function () {
@@ -125,11 +126,11 @@ function GetStarted() {
     return (
         <div class="wp-site-blocks">
             <Navbar />
-            <main class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-26 wp-block-group-is-layout-constrained" style="margin-top:var(--wp--preset--spacing--50);padding-top:var(--wp--preset--spacing--superbspacing-small);padding-right:var(--wp--preset--spacing--superbspacing-small);padding-bottom:var(--wp--preset--spacing--superbspacing-small);padding-left:var(--wp--preset--spacing--superbspacing-small)">
+            <main class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-26 wp-block-group-is-layout-constrained" style={{marginTop:'var(--wp--preset--spacing--50)',paddingTop:'var(--wp--preset--spacing--superbspacing-small)',paddingRight:'var(--wp--preset--spacing--superbspacing-small)',paddingBottom:'var(--wp--preset--spacing--superbspacing-small)',paddingLeft:'var(--wp--preset--spacing--superbspacing-small)'}}>
 
 
                 <div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-23 wp-block-group-is-layout-constrained">
-                    <h1 style="font-style:normal;font-weight:600; margin-bottom:var(--wp--preset--spacing--40);" class="wp-block-post-title has-superbfont-xlarge-font-size">Insights within a minute!</h1>
+                    <h1 style={{fontStyle:'normal',fontWeight:600, marginBottom:'var(--wp--preset--spacing--40)'}} class="wp-block-post-title has-superbfont-xlarge-font-size">Insights within a minute!</h1>
 
                     <div class="entry-content alignwide wp-elements-28c78b71729f9208f2794ac9c056b66e wp-block-post-content has-text-color has-mono-2-color has-superbfont-xsmall-font-size has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained">
                         <div id="form-modal" class="modal">
@@ -179,7 +180,7 @@ function GetStarted() {
                                             <input type="hidden" name="page_id" value="37" />
                                             <input type="hidden" name="wpforms[post_id]" value="37" />
                                             <button type="submit" name="wpforms[submit]" id="wpforms-submit-133" class="wpforms-submit" data-alt-text="Sending..." data-submit-text="Submit" aria-live="assertive" value="wpforms-submit">Submit</button>
-                                            <img decoding="async" src="/wp-content/plugins/wpforms-lite/assets/images/submit-spin.svg" class="wpforms-submit-spinner" style="display: none;" width="26" height="26" alt="Loading" />
+                                            <img decoding="async" src="/wp-content/plugins/wpforms-lite/assets/images/submit-spin.svg" class="wpforms-submit-spinner" style={{display: 'none'}} width="26" height="26" alt="Loading" />
                                         </div>
                                     </form>
                                     </div>
@@ -187,13 +188,13 @@ function GetStarted() {
                             </div>
                         </div>
                         <div class="wp-block-group alignfull is-layout-flow wp-block-group-is-layout-flow">
-                            <div class="wp-block-group alignfull superbthemes-navigation-004 is-layout-flow wp-block-group-is-layout-flow" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0">
-                                <div class="wp-block-cover" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--superbspacing-xxlarge);padding-right:0;padding-bottom:var(--wp--preset--spacing--superbspacing-xxlarge);padding-left:0;min-height:100px;aspect-ratio:unset;">
-                                    <span aria-hidden="true" class="wp-block-cover__background has-background-dim-10 has-background-dim" style="background-color:#667b8d"></span>
+                            <div class="wp-block-group alignfull superbthemes-navigation-004 is-layout-flow wp-block-group-is-layout-flow" style={{marginTop:0,marginBottom:0,paddingTop:0,paddingBottom:0}}>
+                                <div class="wp-block-cover" style={{marginTop:0,marginBottom:0,paddingTop:'var(--wp--preset--spacing--superbspacing-xxlarge)',paddingRight:0,paddingBottom:'var(--wp--preset--spacing--superbspacing-xxlarge)',paddingLeft:0,minHeight:100,aspectRatio:'unset'}}>
+                                    <span aria-hidden="true" class="wp-block-cover__background has-background-dim-10 has-background-dim" style={{backgroundColor:'#667b8d'}}></span>
                                     <img fetchpriority="high" decoding="async" width="1700" height="1134" class="wp-block-cover__image-background wp-image-38" alt="" src="https://chatalytics.nl/wp-content/uploads/2024/12/lp7-sonoran-hero1.jpg" data-object-fit="cover" srcset="/wp-content/uploads/2024/12/lp7-sonoran-hero1.jpg 1700w, /wp-content/uploads/2024/12/lp7-sonoran-hero1-300x200.jpg 300w, /wp-content/uploads/2024/12/lp7-sonoran-hero1-1024x683.jpg 1024w, /wp-content/uploads/2024/12/lp7-sonoran-hero1-768x512.jpg 768w, /wp-content/uploads/2024/12/lp7-sonoran-hero1-1536x1025.jpg 1536w" sizes="(max-width: 1700px) 100vw, 1700px" />
                                     <div class="wp-block-cover__inner-container is-layout-flow wp-container-core-cover-is-layout-1 wp-block-cover-is-layout-flow">
-                                        <div class="wp-block-group alignwide has-global-padding is-layout-constrained wp-container-core-group-is-layout-3 wp-block-group-is-layout-constrained" style="padding-top:var(--wp--preset--spacing--superbspacing-small);padding-right:var(--wp--preset--spacing--superbspacing-medium);padding-bottom:var(--wp--preset--spacing--superbspacing-medium);padding-left:var(--wp--preset--spacing--superbspacing-medium)">
-                                            <h1 class="wp-block-heading alignwide has-text-align-center has-contrast-light-color has-text-color has-superbfont-xxlarge-font-size" style="padding-right:var(--wp--preset--spacing--superbspacing-small);padding-bottom:var(--wp--preset--spacing--superbspacing-xxsmall);padding-left:var(--wp--preset--spacing--superbspacing-small);font-style:normal;font-weight:700">Get Started</h1>
+                                        <div class="wp-block-group alignwide has-global-padding is-layout-constrained wp-container-core-group-is-layout-3 wp-block-group-is-layout-constrained" style={{paddingTop:'var(--wp--preset--spacing--superbspacing-small)',paddingRight:'var(--wp--preset--spacing--superbspacing-medium)',paddingBottom:'var(--wp--preset--spacing--superbspacing-medium)',paddingLeft:'var(--wp--preset--spacing--superbspacing-medium)'}}>
+                                            <h1 class="wp-block-heading alignwide has-text-align-center has-contrast-light-color has-text-color has-superbfont-xxlarge-font-size" style={{paddingRight:'var(--wp--preset--spacing--superbspacing-small)',paddingBottom:'var(--wp--preset--spacing--superbspacing-xxsmall)',paddingLeft:'var(--wp--preset--spacing--superbspacing-small)',fontStyle:'normal',fontWeight:700}}>Get Started</h1>
                                             <div id="loader" class="loader">
                                                 <div class="spinner"></div>
                                                 <span>Analyzing your chat, please wait&#8230;</span>
@@ -222,7 +223,7 @@ function GetStarted() {
                                                 <button id="submit-button" type="submit">Upload and Display Image</button>
                                             </form>
 
-                                            <img id="imageDisplay" style="display: none;" />
+                                            <img id="imageDisplay" style={{display: 'none'}} />
 
                                             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                                         </div>
@@ -232,10 +233,10 @@ function GetStarted() {
 
 
 
-                            <div class="wp-block-group alignfull superbthemes-features-005 has-global-padding is-layout-constrained wp-container-core-group-is-layout-13 wp-block-group-is-layout-constrained" style="border-bottom-color:var(--wp--preset--color--mono-3);border-bottom-width:1px;margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--superbspacing-small);padding-right:var(--wp--preset--spacing--superbspacing-small);padding-bottom:var(--wp--preset--spacing--superbspacing-small);padding-left:var(--wp--preset--spacing--superbspacing-small)">
-                                <div class="wp-block-columns alignwide is-layout-flex wp-container-core-columns-is-layout-2 wp-block-columns-is-layout-flex" style="border-radius:0px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
-                                    <div class="wp-block-column is-vertically-aligned-center is-layout-flow wp-container-core-column-is-layout-4 wp-block-column-is-layout-flow" style="padding-top:0;padding-right:0px;padding-bottom:0;padding-left:0px">
-                                        <div class="wp-block-group is-content-justification-center is-nowrap is-layout-flex wp-container-core-group-is-layout-6 wp-block-group-is-layout-flex" style="border-style:none;border-width:0px;border-radius:0px;margin-top:0;margin-bottom:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+                            <div class="wp-block-group alignfull superbthemes-features-005 has-global-padding is-layout-constrained wp-container-core-group-is-layout-13 wp-block-group-is-layout-constrained" style={{borderBottomColor:'var(--wp--preset--color--mono-3)',borderBottomWidth:1,marginTop:0,marginBottom:0,paddingTop:'var(--wp--preset--spacing--superbspacing-small)',paddingRight:'var(--wp--preset--spacing--superbspacing-small)',paddingBottom:'var(--wp--preset--spacing--superbspacing-small)',paddingLeft:'var(--wp--preset--spacing--superbspacing-small)'}}>
+                                <div class="wp-block-columns alignwide is-layout-flex wp-container-core-columns-is-layout-2 wp-block-columns-is-layout-flex" style={{borderRadius:0,paddingTop:0,paddingRight:0,paddingBottom:0,paddingLeft:0}}>
+                                    <div class="wp-block-column is-vertically-aligned-center is-layout-flow wp-container-core-column-is-layout-4 wp-block-column-is-layout-flow" style={{paddingTop:0,paddingRight:0,paddingBottom:0,paddingLeft:0}}>
+                                        <div class="wp-block-group is-content-justification-center is-nowrap is-layout-flex wp-container-core-group-is-layout-6 wp-block-group-is-layout-flex" style={{borderStyle:'none',borderWidth:0,borderRadius:0,marginTop:0,marginBottom:0,paddingTop:0,paddingRight:0,paddingBottom:0,paddingLeft:0}}>
                                             <div class="wp-block-group is-vertical is-layout-flex wp-container-core-group-is-layout-5 wp-block-group-is-layout-flex">
                                                 <h3 class="wp-block-heading has-text-align-left has-primary-color has-text-color has-superbfont-xsmall-font-size">Start</h3>
 
@@ -248,8 +249,8 @@ function GetStarted() {
 
 
 
-                                    <div class="wp-block-column is-vertically-aligned-center is-layout-flow wp-container-core-column-is-layout-5 wp-block-column-is-layout-flow" style="padding-top:0;padding-right:0px;padding-bottom:0;padding-left:0px">
-                                        <div class="wp-block-group is-content-justification-center is-nowrap is-layout-flex wp-container-core-group-is-layout-8 wp-block-group-is-layout-flex" style="border-style:none;border-width:0px;border-radius:0px;margin-top:0;margin-bottom:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+                                    <div class="wp-block-column is-vertically-aligned-center is-layout-flow wp-container-core-column-is-layout-5 wp-block-column-is-layout-flow" style={{paddingTop:0,paddingRight:0,paddingBottom:0,paddingLeft:0}}>
+                                        <div class="wp-block-group is-content-justification-center is-nowrap is-layout-flex wp-container-core-group-is-layout-8 wp-block-group-is-layout-flex" style={{borderStyle:'none',borderWidth:0,borderRadius:0,marginTop:0,marginBottom:0,paddingTop:0,paddingRight:0,paddingBottom:0,paddingLeft:0}}>
                                             <div class="wp-block-group is-vertical is-layout-flex wp-container-core-group-is-layout-7 wp-block-group-is-layout-flex">
                                                 <h3 class="wp-block-heading has-text-align-left has-primary-color has-text-color has-superbfont-xsmall-font-size">Export chat</h3>
 
@@ -262,8 +263,8 @@ function GetStarted() {
 
 
 
-                                    <div class="wp-block-column is-vertically-aligned-center is-layout-flow wp-container-core-column-is-layout-6 wp-block-column-is-layout-flow" style="padding-top:0;padding-right:0px;padding-bottom:0;padding-left:0px">
-                                        <div class="wp-block-group is-content-justification-center is-nowrap is-layout-flex wp-container-core-group-is-layout-10 wp-block-group-is-layout-flex" style="border-style:none;border-width:0px;border-radius:0px;margin-top:0;margin-bottom:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+                                    <div class="wp-block-column is-vertically-aligned-center is-layout-flow wp-container-core-column-is-layout-6 wp-block-column-is-layout-flow" style={{paddingTop:0,paddingRight:0,paddingBottom:0,paddingLeft:0}}>
+                                        <div class="wp-block-group is-content-justification-center is-nowrap is-layout-flex wp-container-core-group-is-layout-10 wp-block-group-is-layout-flex" style={{borderStyle:'none',borderWidth:0,borderRadius:0,marginTop:0,marginBottom:0,paddingTop:0,paddingRight:0,paddingBottom:0,paddingLeft:0}}>
                                             <div class="wp-block-group is-vertical is-layout-flex wp-container-core-group-is-layout-9 wp-block-group-is-layout-flex">
                                                 <h3 class="wp-block-heading has-text-align-left has-primary-color has-text-color has-superbfont-xsmall-font-size">Save</h3>
 
@@ -276,8 +277,8 @@ function GetStarted() {
 
 
 
-                                    <div class="wp-block-column is-vertically-aligned-center is-layout-flow wp-container-core-column-is-layout-7 wp-block-column-is-layout-flow" style="padding-top:0;padding-right:0px;padding-bottom:0;padding-left:0px">
-                                        <div class="wp-block-group is-content-justification-center is-nowrap is-layout-flex wp-container-core-group-is-layout-12 wp-block-group-is-layout-flex" style="border-style:none;border-width:0px;border-radius:0px;margin-top:0;margin-bottom:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+                                    <div class="wp-block-column is-vertically-aligned-center is-layout-flow wp-container-core-column-is-layout-7 wp-block-column-is-layout-flow" style={{paddingTop:0,paddingRight:0,paddingBottom:0,paddingLeft:0}}>
+                                        <div class="wp-block-group is-content-justification-center is-nowrap is-layout-flex wp-container-core-group-is-layout-12 wp-block-group-is-layout-flex" style={{borderStyle:'none',borderWidth:0,borderRadius:0,marginTop:0,marginBottom:0,paddingTop:0,paddingRight:0,paddingBottom:0,paddingLeft:0}}>
                                             <div class="wp-block-group is-vertical is-layout-flex wp-container-core-group-is-layout-11 wp-block-group-is-layout-flex">
                                                 <h3 class="wp-block-heading has-text-align-left has-primary-color has-text-color has-superbfont-xsmall-font-size">Upload</h3>
 
@@ -292,12 +293,12 @@ function GetStarted() {
 
 
 
-                            <div class="wp-block-group alignfull has-base-background-color has-background has-global-padding is-layout-constrained wp-container-core-group-is-layout-17 wp-block-group-is-layout-constrained" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--superbspacing-xxlarge);padding-right:var(--wp--preset--spacing--superbspacing-small);padding-bottom:var(--wp--preset--spacing--superbspacing-xxlarge);padding-left:var(--wp--preset--spacing--superbspacing-small)">
+                            <div class="wp-block-group alignfull has-base-background-color has-background has-global-padding is-layout-constrained wp-container-core-group-is-layout-17 wp-block-group-is-layout-constrained" style={{marginTop:0,marginBottom:0,paddingTop:'var(--wp--preset--spacing--superbspacing-xxlarge)',paddingRight:'var(--wp--preset--spacing--superbspacing-small)',paddingBottom:'var(--wp--preset--spacing--superbspacing-xxlarge)',paddingLeft:'var(--wp--preset--spacing--superbspacing-small)'}}>
                                 <div class="wp-block-columns alignwide is-layout-flex wp-container-core-columns-is-layout-3 wp-block-columns-is-layout-flex">
                                     <div class="wp-block-column is-vertically-aligned-center is-layout-flow wp-container-core-column-is-layout-8 wp-block-column-is-layout-flow">
-                                        <div class="wp-block-group has-mono-4-background-color has-background has-global-padding is-content-justification-left is-layout-constrained wp-container-core-group-is-layout-16 wp-block-group-is-layout-constrained" style="border-radius:8px;padding-top:var(--wp--preset--spacing--superbspacing-medium);padding-right:var(--wp--preset--spacing--superbspacing-medium);padding-bottom:var(--wp--preset--spacing--superbspacing-medium);padding-left:var(--wp--preset--spacing--superbspacing-medium)">
+                                        <div class="wp-block-group has-mono-4-background-color has-background has-global-padding is-content-justification-left is-layout-constrained wp-container-core-group-is-layout-16 wp-block-group-is-layout-constrained" style={{borderRadius:8,paddingTop:'var(--wp--preset--spacing--superbspacing-medium)',paddingRight:'var(--wp--preset--spacing--superbspacing-medium)',paddingBottom:'var(--wp--preset--spacing--superbspacing-medium)',paddingLeft:'var(--wp--preset--spacing--superbspacing-medium)'}}>
                                             <div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-is-layout-14 wp-block-group-is-layout-flex">
-                                                <figure class="wp-block-image aligncenter size-large is-resized"><img decoding="async" src="https://chatalytics.nl/wp-content/uploads/2024/12/lp7-sonoran-wechat-logo.png" alt="" style="width:48px;height:48px" /></figure>
+                                                <figure class="wp-block-image aligncenter size-large is-resized"><img decoding="async" src="https://chatalytics.nl/wp-content/uploads/2024/12/lp7-sonoran-wechat-logo.png" alt="" style={{width:48,height:48}} /></figure>
                                             </div>
 
 
