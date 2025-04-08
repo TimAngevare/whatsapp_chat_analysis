@@ -3,6 +3,7 @@ import './App.css';
 import Home from './Pages/Home';
 import Contact from './Pages/Contact';
 import GetStarted from './Pages/GetStarted';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (

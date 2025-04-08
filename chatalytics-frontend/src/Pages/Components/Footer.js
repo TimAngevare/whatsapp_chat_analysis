@@ -17,7 +17,7 @@ function Footer () {
 
 
 								<ul
-									class="wp-block-social-links alignleft is-style-logos-only is-layout-flex wp-block-social-links-is-layout-flex">
+									class="wp-block-social-links alignleft is-style-logos-only is-layout-flex wp-block-social-links-is-layout-flex" style={{listStyleType:'none'}}>
 									<li class="wp-social-link wp-social-link-github  wp-block-social-link"><a
 											href="https://github.com/TimAngevare/whatsapp_chat_analysis"
 											class="wp-block-social-link-anchor"><svg width="24" height="24"
@@ -43,7 +43,7 @@ function Footer () {
 								<nav class="has-text-color has-mono-2-color has-superbfont-xsmall-font-size items-justified-left is-vertical wp-block-navigation is-content-justification-left is-layout-flex wp-container-core-navigation-is-layout-2 wp-block-navigation-is-layout-flex"
 									aria-label="Footer navigation">
 									<ul
-										class="wp-block-navigation__container has-text-color has-mono-2-color has-superbfont-xsmall-font-size items-justified-left is-vertical wp-block-navigation has-superbfont-xsmall-font-size">
+										class="wp-block-navigation__container has-text-color has-mono-2-color has-superbfont-xsmall-font-size items-justified-left is-vertical wp-block-navigation has-superbfont-xsmall-font-size" style={{listStyleType:'none'}}>
 										<li
 											class="has-superbfont-xsmall-font-size wp-block-navigation-item wp-block-navigation-link">
 											<a class="wp-block-navigation-item__content" href="#"><span

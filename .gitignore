@@ -171,6 +171,7 @@ cython_debug/
 
 # dependencies
 /infographic-react/node_modules
+/node_modules
 /.pnp
 .pnp.js
 

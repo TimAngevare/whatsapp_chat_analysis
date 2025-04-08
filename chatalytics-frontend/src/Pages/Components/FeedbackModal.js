@@ -22,3 +22,5 @@ function FeedbackModel ({ isOpen, onClose }) {
     </div>
   );
 }
+
+export default FeedbackModel;
