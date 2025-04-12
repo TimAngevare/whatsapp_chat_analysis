@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import Screenshot from '../assets/picture-1-1024x579.png';
 import Person from "./Components/Person";
-import joostie from '../assets/IMG_3935-scaled.jpg';
 
 function Home() {
     return (

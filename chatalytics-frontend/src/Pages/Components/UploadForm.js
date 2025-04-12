@@ -1,23 +1,32 @@
 import ReCAPTCHA from "react-google-recaptcha";
 import { useRef, useState, useEffect } from "react";
-import Waves from "../../assets/stacked-waves-haikei.svg";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 
 function UploadForm() {
-    const themes = {
-        "default": ["#9333ea", "#4f46e5", "#16a34a", "#db2777"],
-        "light": ["#9333ea", "#4f46e5", "#16a34a", "#db2777"],
-        "jungle": ["#9333ea", "#4f46e5", "#16a34a", "#db2777"]
-    }
+    const [themes, setThemes] = useState([]);
     const captchaRef = useRef(null);
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [fileError, setFileError] = useState("");
-    const [captchaVerified, setCaptchaVerified] = useState(false);
+    const [captchaVerified, setCaptchaVerified] = useState(true);
     const [captchaError, setCaptchaError] = useState("");
+
+    useEffect(() => {
+        // Load themes data from JSON file
+        const loadThemes = async () => {
+            try {
+                const response = await fetch('/themes.json');
+                const data = await response.json();
+                setThemes(data.themes);
+            } catch (error) {
+                console.error("Error loading themes data:", error);
+            }
+        };
+        loadThemes();
+    }, []);
 
     useEffect(() => {
         setIsSubmitDisabled(!(selectedFile && captchaVerified));
@@ -103,13 +112,13 @@ function UploadForm() {
         
         const loader = document.getElementById('loader');
         const button = document.getElementById('submit-button');
-        const token = captchaRef.current.getValue();
+        //const token = captchaRef.current.getValue();
+        const token = 'yes'
 
         if (!selectedFile) {
             setFileError("Please select a zip file.");
             return;
         }
-
         if (!token) {
             alert("Are you sure you are a human? Please complete the captcha in order to prove it.");
             return;
@@ -117,27 +126,29 @@ function UploadForm() {
 
         const formData = new FormData();
         formData.append('zip-file', selectedFile);
-        formData.append('g-recaptcha-response', token);
+        //formData.append('g-recaptcha-response', token);
 
         loader.style.display = 'flex';
         button.disabled = true;
 
         try {
-            const response = await fetch('https://chatalytics.nl/wp-json/myplugin/v1/upload', {
+            const response = await fetch('https://6vx0ktq09i.execute-api.eu-west-2.amazonaws.com/default/analyze-chat', {
                 method: 'POST',
                 body: formData,
-                headers: { 'Primary': themes[selectedTheme][0], 'Secondary': themes[selectedTheme][1], 'Tertiary': themes[selectedTheme][2], 'Fourth': themes[selectedTheme][3] }
+                headers: { 'primary': themes[selectedTheme]['primary'], 'secondary': themes[selectedTheme]['secondary'], 'tertiary': themes[selectedTheme]['tertiary'], 'fourth': themes[selectedTheme]['fourth'], 'background': themes[selectedTheme]['background'], 'Captcha': token }
             });
             if (!response.ok) {
                 throw new Error(`Server error: ${response.status}`);
             }
-
-            const data = await response.json();
-            if (data && data.image) {
-                const imageBase64 = data.image;
+            const json_data = await response.json();
+            const data = await JSON.parse(json_data);
+        
+            if (data && data['image']) {
+                const imageBase64 = data['image'];
+               
                 const link = document.createElement('a');
                 link.href = `data:image/png;base64,${imageBase64}`;
-                link.download = 'image.png';
+                link.download = 'chatalyticschat.png';
                 link.click();
 
                 const modal = document.getElementById('form-modal');
@@ -245,9 +256,18 @@ function UploadForm() {
                             <Form.Group className="mb-3">
                                 <Form.Label style={{ fontWeight: 500 }}>Select your theme:</Form.Label>
                                 <div className="radio" style={{ display: 'flex', gap: '15px', margin: '10px 0' }}>
-                                    <Form.Check inline label='Default' type="radio" id="default" name="theme" value="default" defaultChecked />
-                                    <Form.Check inline label='Jungle' type="radio" id="jungle" name="theme" value="jungle" />
-                                    <Form.Check inline label='Light' type="radio" id="light" name="theme" value="light" />
+                                    {themes.map((theme, index) => (
+                                        <Form.Check
+                                            key={index}
+                                            inline
+                                            label={theme.name}
+                                            type="radio"
+                                            id={theme.name.toLowerCase()}
+                                            name="theme"
+                                            value={index}
+                                            />
+                                    ))}
+                                    
                                 </div>
                             </Form.Group>
 

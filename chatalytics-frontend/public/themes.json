@@ -1,0 +1,28 @@
+{
+    "themes": [
+        {
+            "name": "default",
+            "primary": "#9333ea",
+            "secondary": "#4f46e5",
+            "tertiary": "#16a34a",
+            "fourth": "#db2777",
+            "background": "#f3f4f6"
+        },
+        {
+            "name": "light",
+            "primary": "#9333ea",
+            "secondary": "#4f46e5",
+            "tertiary": "#16a34a",
+            "fourth": "#db2777",
+            "background": "#f3f4f6"
+        },
+        {
+            "name": "jungle",
+            "primary": "#9333ea",
+            "secondary": "#4f46e5",
+            "tertiary": "#16a34a",
+            "fourth": "#db2777",
+            "background": "#f3f4f6"
+        }
+    ]
+}
