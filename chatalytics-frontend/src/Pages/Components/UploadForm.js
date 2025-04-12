@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 
-function UploadForm() {
+function UploadForm({ setIsOpen }) {
     const [themes, setThemes] = useState([]);
     const captchaRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -151,10 +151,7 @@ function UploadForm() {
                 link.download = 'chatalyticschat.png';
                 link.click();
 
-                const modal = document.getElementById('form-modal');
-                if (modal) {
-                    modal.style.display = 'flex'; // Show the modal
-                }
+                setIsOpen(true);
                 
                 // Reset form after successful upload
                 setSelectedFile(null);

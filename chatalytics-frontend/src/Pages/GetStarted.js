@@ -7,11 +7,11 @@ import Waves from "../assets/stacked-waves-haikei.svg";
 
 
 function GetStarted() {
-
+    const [isOpen, setIsOpen] = React.useState(false);
     return (
         <div className="wp-site-blocks">
             <Navigationbar />
-            <FeedbackModal isOpen={false} onClose={() => {
+            <FeedbackModal isOpen={isOpen} onClose={() => {
                 const modal = document.getElementById('form-modal');
                 modal.style.display = 'none';
             }} />
@@ -43,7 +43,7 @@ function GetStarted() {
                                     backdropFilter: 'blur(8px)',
                                 }}>
                                     <h1 style={{ textAlign: 'center', marginBottom: '20px', fontWeight: '700' }}>Get Started</h1>
-                                    <UploadForm />
+                                    <UploadForm setIsOpen={setIsOpen}/>
                                 </div>
                             </div>
 
